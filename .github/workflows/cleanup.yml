@@ -13,7 +13,7 @@ jobs:
   cleanup:
     name: Clean up temporary test repositories
     runs-on: ubuntu-24.04
-    if: github.repository_owner == 'jonathanagustin'
+    if: github.repository_owner == 'drengskapur'
     steps:
       - name: Cleanup leftover test repositories
         run: |
@@ -30,7 +30,7 @@ jobs:
 
             # Get list of repositories matching our patterns
             local repos=$(gh repo list "$org" --limit 200 --json name,createdAt,visibility | \
-              jq -r '.[] | select(.name | test("^(temp-ci-|tmp-gitflow-test-)")) | "\(.name)|\(.createdAt)|\(.visibility)"')
+              jq -r '.[] | select(.name | test("^(temp-integration-|temp-ci-|tmp-gitflow-test-)")) | "\(.name)|\(.createdAt)|\(.visibility)"')
 
             if [ -z "$repos" ]; then
               echo "No temporary repositories found - nothing to clean up"
@@ -52,15 +52,15 @@ jobs:
               echo "Evaluating: $repo_name"
 
               # Safety check 1: Repository name must match expected patterns
-              if [[ ! "$repo_name" =~ ^temp-ci- ]] && [[ ! "$repo_name" =~ ^tmp-gitflow-test- ]]; then
-                echo "SAFETY CHECK FAILED: Repository '$repo_name' does not match expected patterns"
+              if [[ ! "$repo_name" =~ ^temp-integration- ]] && [[ ! "$repo_name" =~ ^temp-ci- ]] && [[ ! "$repo_name" =~ ^tmp-gitflow-test- ]]; then
+                echo "⚠️ SAFETY CHECK FAILED: Repository '$repo_name' does not match expected patterns"
                 skipped_count=$((skipped_count + 1))
                 continue
               fi
 
               # Safety check 2: Repository must be private
               if [[ "$visibility" != "PRIVATE" ]]; then
-                echo "SAFETY CHECK FAILED: Repository '$repo_name' is not private (visibility: $visibility)"
+                echo "⚠️ SAFETY CHECK FAILED: Repository '$repo_name' is not private (visibility: $visibility)"
                 skipped_count=$((skipped_count + 1))
                 continue
               fi
@@ -71,7 +71,7 @@ jobs:
               local age_hours=$((age_seconds / 3600))
 
               if [[ $age_seconds -lt $max_age_seconds ]]; then
-                echo "Repository '$repo_name' is only ${age_hours}h old (< ${max_age_hours}h) - skipping"
+                echo "⏳ Repository '$repo_name' is only ${age_hours}h old (< ${max_age_hours}h) - skipping"
                 skipped_count=$((skipped_count + 1))
                 continue
               fi
@@ -84,20 +84,20 @@ jobs:
               fi
 
               if [[ "$fresh_visibility" != "PRIVATE" ]]; then
-                echo "SAFETY CHECK FAILED: Repository '$repo_name' visibility changed to $fresh_visibility"
+                echo "⚠️ SAFETY CHECK FAILED: Repository '$repo_name' visibility changed to $fresh_visibility"
                 skipped_count=$((skipped_count + 1))
                 continue
               fi
 
-              echo "All safety checks passed for '$repo_name' (age: ${age_hours}h)"
-              echo "Deleting: $repo_full_name"
+              echo "✅ All safety checks passed for '$repo_name' (age: ${age_hours}h)"
+              echo "🗑️ Deleting: $repo_full_name"
 
               # Attempt to delete the repository
               if gh repo delete "$repo_full_name" --yes 2>/dev/null; then
-                echo "Successfully deleted: $repo_full_name"
+                echo "✅ Successfully deleted: $repo_full_name"
                 deleted_count=$((deleted_count + 1))
               else
-                echo "Failed to delete: $repo_full_name"
+                echo "❌ Failed to delete: $repo_full_name"
                 skipped_count=$((skipped_count + 1))
               fi
               echo ""
