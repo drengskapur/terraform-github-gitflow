@@ -36,17 +36,17 @@ output "develop_branch_name" {
 ###############################################################################
 
 output "main_branch_ruleset_id" {
-  value       = github_repository_ruleset.branches["main"].id
-  description = "Ruleset ID for the main branch."
+  value       = var.enable_branch_protection_rulesets ? github_repository_ruleset.branches["main"].id : null
+  description = "Ruleset ID for the main branch (null if rulesets disabled)."
 }
 
 output "develop_branch_ruleset_id" {
-  value       = var.enable_gitflow && var.enable_develop_branch ? github_repository_ruleset.branches["develop"].id : null
+  value       = var.enable_branch_protection_rulesets && var.enable_gitflow && var.enable_develop_branch ? github_repository_ruleset.branches["develop"].id : null
   description = "Ruleset ID for the develop branch (null if disabled)."
 }
 
 output "tag_protection_ruleset_id" {
-  value       = var.enable_tag_protection ? one(github_repository_ruleset.tags[*].id) : null
+  value       = var.enable_branch_protection_rulesets && var.enable_tag_protection ? one(github_repository_ruleset.tags[*].id) : null
   description = "Ruleset ID for tag protection (null if disabled)."
 }
 
@@ -56,13 +56,13 @@ output "push_rules_ruleset_id" {
 }
 
 output "branch_rulesets" {
-  value = {
+  value = var.enable_branch_protection_rulesets ? {
     for k, v in github_repository_ruleset.branches : k => {
       id          = v.id
       name        = v.name
       enforcement = v.enforcement
     }
-  }
+  } : {}
   description = "Map of all branch rulesets with their IDs and enforcement status."
 }
 
