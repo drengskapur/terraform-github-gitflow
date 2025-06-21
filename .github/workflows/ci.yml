@@ -4,16 +4,29 @@ on:
     branches: [main, develop]
   push:
     branches: [main, develop]
+
+# Restrict default token permissions (principle of least privilege)
+permissions:
+  contents: read
+
+# Cancel duplicate runs on the same branch/PR
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   TERRAFORM_VERSION: "1.9.0"
   TFLINT_VERSION: "v0.53.0"
   TERRAFORM_DOCS_VERSION: "v0.18.0"
   TFSEC_VERSION: "v1.28.5"
   CHECKOV_VERSION: "3.2.255"
+
 jobs:
   validate:
     name: Validate
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +43,7 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate
+
   tflint:
     name: TFLint
     runs-on: ubuntu-latest
@@ -49,27 +63,31 @@ jobs:
         run: tflint --init
       - name: Run TFLint
         run: tflint --format=compact
+
   security:
     name: Security Scanning
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run Trivy (tfsec replacement)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.31.0
         with:
-          scan-type: 'config'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          scan-type: "config"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
       - name: Run Checkov
         id: checkov
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
           framework: terraform
@@ -80,9 +98,12 @@ jobs:
         if: always()
         with:
           sarif_file: checkov-results.sarif
+
   docs:
     name: Documentation
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
@@ -99,9 +120,12 @@ jobs:
           git-push-user-name: "terraform-docs[bot]"
           git-push-user-email: "terraform-docs[bot]@users.noreply.github.com"
           git-commit-message: "docs: update README.md with terraform-docs"
+
   examples:
     name: Test Examples
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         example: [minimal, complete]

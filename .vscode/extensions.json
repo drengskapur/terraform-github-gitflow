@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "hashicorp.terraform",
+    "hashicorp.hcl",
+    "davidanson.vscode-markdownlint",
+    "bierner.markdown-mermaid",
+    "yzhang.markdown-all-in-one",
+    "redhat.vscode-yaml"
+  ],
+  "unwantedRecommendations": []
+}

@@ -1,9 +1,11 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: '[BUG] '
-labels: 'bug'
-assignees: ''
+name: 🐛 Bug Report
+about: Report a reproducible issue with the terraform-github-gitflow module
+title: "[BUG] <short description>"
+labels:
+  - bug
+  - needs-triage
+assignees: ""
 ---
 
 ## 🐛 Bug Description
@@ -66,6 +68,14 @@ A clear and concise description of what actually happened.
 ## 📝 Additional Context
 
 Add any other context about the problem here.
+
+## ✔️ Checklist
+
+- [ ] I have searched the [existing issues](../../issues) for duplicates
+- [ ] I have reproduced this issue with the **latest** module version
+- [ ] I have provided a **minimal** Terraform configuration that reproduces the problem
+- [ ] I have included **logs/output** where appropriate
+- [ ] I have included the Terraform version, provider version and operating system
 
 ## 🔍 Possible Solution
 
