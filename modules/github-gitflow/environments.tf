@@ -4,14 +4,14 @@
 
 locals {
   envs = {
-    dev = var.enable_dev_environment ? {
+    dev = var.enable_gitflow && var.enable_dev_environment ? {
       name     = "development"
       branches = [var.develop_branch_name]
       reviewers = var.dev_env_reviewers
       wait     = 0
     } : null
 
-    stage = var.enable_stage_environment ? {
+    stage = var.enable_gitflow && var.enable_stage_environment ? {
       name     = "staging"
       branches = ["release/*"]
       reviewers = var.stage_env_reviewers

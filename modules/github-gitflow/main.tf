@@ -5,8 +5,8 @@ module "github_gitflow" {
   source = "./modules/github-gitflow"
 
   # Required variables
-  github_owner    = "drengskapur"
-  repository_name = "terraform-github-gitflow"
+  github_owner    = var.github_owner
+  repository_name = "example-repository"
 
   # Optional: Configure GitFlow workflow
   enable_gitflow = true
