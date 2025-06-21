@@ -61,6 +61,14 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           if [ -f "CHANGELOG.md" ] && ! git diff --quiet CHANGELOG.md; then
+            # Stash the changelog changes
+            git stash push -m "changelog-updates" CHANGELOG.md
+
+            # Checkout main branch (we're currently in detached HEAD from tag)
+            git checkout main
+
+            # Apply the stashed changelog changes
+            git stash pop
             git add CHANGELOG.md
             git commit -m "docs: update CHANGELOG.md for ${{ steps.version.outputs.version }} [skip ci]"
 
