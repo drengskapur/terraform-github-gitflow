@@ -14,33 +14,32 @@ content: |-
 
   A comprehensive, production-ready Terraform module for implementing GitFlow workflows on GitHub repositories with modern security features and idiomatic configuration.
 
-  ## 🚀 Features
+  - Implements the GitFlow branch model (main, develop, feature, release, hotfix)
+  - Applies GitHub provider v6 rulesets for branch and tag protection
+  - Supports per-branch overrides for reviews, linear history and signed-commit enforcement
+  - Integrates Advanced Security, secret scanning and Dependabot alerts
+  - Offers optional push rules, tag protection and required workflows
+  - Provisions GitHub Environments with wait timers and mandatory reviewers
+  - Publishes webhooks for external automation
+  - Manages repository topics declaratively
 
-  - **Complete GitFlow Implementation**: Support for main, develop, feature, release, and hotfix branches
-  - **Modern GitHub Provider**: Uses latest GitHub provider features (v6.6.0+) including repository rulesets
-  - **Security First**: Advanced Security, secret scanning, Dependabot, and vulnerability alerts
-  - **Flexible Configuration**: Extensive customization options with sensible defaults
-  - **GitHub Environments**: Automated deployment workflows with approval processes
-  - **Webhook Support**: Optional automation hooks for GitFlow processes
-  - **Idiomatic Structure**: Follows Terraform and GitHub provider best practices
-
-  ## 📋 Requirements
+  ## Requirements
 
   {{ .Requirements }}
 
-  ## 🏗️ Providers
+  ## Providers
 
   {{ .Providers }}
 
-  ## 📥 Inputs
+  ## Inputs
 
   {{ .Inputs }}
 
-  ## 📤 Outputs
+  ## Outputs
 
   {{ .Outputs }}
 
-  ## 🎯 Usage
+  ## Usage
 
   ### Basic Example
 
@@ -73,24 +72,41 @@ content: |-
 
   ```hcl
   module "gitflow" {
-    source = "drengskapur/gitflow/github"
+    source  = "drengskapur/gitflow/github"
     version = "~> 1.0"
 
     github_owner    = "your-org"
     repository_name = "your-repo"
 
-    # Custom branch configuration
+    # Custom branch names
     main_branch_name    = "production"
     develop_branch_name = "integration"
 
-    # Override main branch rules
+    # Branch-specific protection overrides
     main_branch_overrides = {
-      required_reviews = 3
+      required_reviews       = 3
       require_linear_history = true
+      require_signed_commits = true
+      dismiss_stale_reviews  = true
+    }
+    develop_branch_overrides = {
+      required_reviews = 2
     }
 
-    # Custom status checks
-    main_branch_status_checks = ["ci/build", "security/scan"]
+    # Status checks
+    main_branch_status_checks    = ["ci/build", "security/scan"]
+    develop_branch_status_checks = ["ci/build"]
+
+    # Security & compliance
+    enable_push_rules         = true
+    enable_tag_protection     = true
+    blocked_file_extensions   = [".pem", ".key"]
+    restricted_file_paths     = ["secrets/*", "infra/prod/**"]
+    required_workflows        = ["build.yml", "lint.yml"]
+
+    # Repository topics
+    manage_topics_in_terraform = true
+    repository_topics          = ["terraform", "gitflow", "github"]
 
     # Bypass actors for emergencies
     bypass_actors = [
@@ -101,14 +117,21 @@ content: |-
       }
     ]
 
+    # Environments
+    enable_dev_environment   = true
+    enable_stage_environment = true
+    enable_prod_environment  = true
+
+    prod_env_reviewers = ["ops-team", "security-team"]
+
     # Webhook automation
-    enable_webhook = true
-    webhook_url    = "https://your-automation.example.com/webhook"
-    webhook_events = ["push", "pull_request", "release"]
+    enable_webhook  = true
+    webhook_url     = "https://automation.example.com/github"
+    webhook_events  = ["push", "pull_request", "release"]
   }
   ```
 
-  ## 🌿 GitFlow Branch Structure
+  ## GitFlow Branch Structure
 
   This module implements the complete GitFlow workflow:
 
@@ -124,15 +147,15 @@ content: |-
 
   ### Branch Protection Rules
 
-  | Branch Type | Reviews | Signed Commits | Linear History | Status Checks |
-  |-------------|---------|----------------|----------------|---------------|
-  | **main**    | 2       | ✅ Required    | ✅ Required    | ✅ Strict     |
-  | **develop** | 1       | ⚪ Optional    | ⚪ Optional    | ✅ Strict     |
-  | **feature** | 0       | ⚪ Optional    | ⚪ Optional    | ⚪ Optional   |
-  | **release** | 2       | ✅ Required    | ✅ Required    | ✅ Strict     |
-  | **hotfix**  | 1       | ✅ Required    | ✅ Required    | ✅ Strict     |
+  | Branch&nbsp;Type | Reviews | Signed&nbsp;Commits | Linear&nbsp;History | Status&nbsp;Checks |
+  |:-------------:|:-------:|:--------------:|:--------------:|:-------------:|
+  | **main**    | 2       | Required       | Required       | Strict        |
+  | **develop** | 1       | Optional       | Optional       | Optional      |
+  | **feature** | 0       | Optional       | Optional       | Optional      |
+  | **release** | 2       | Required       | Required       | Optional      |
+  | **hotfix**  | 1       | Required       | Required       | Optional      |
 
-  ## 🌍 GitHub Environments
+  ## GitHub Environments
 
   The module creates three deployment environments:
 
@@ -140,7 +163,7 @@ content: |-
   - **Staging**: Deploys from `release/*` branches, 10-minute wait
   - **Production**: Deploys from `main` branch, 30-minute wait + reviewers
 
-  ## 🔒 Security Features
+  ## Security Features
 
   - **Advanced Security**: GitHub Advanced Security features
   - **Secret Scanning**: Automatic secret detection with push protection
@@ -149,19 +172,19 @@ content: |-
   - **Signed Commits**: Required for production branches
   - **Code Scanning**: Integration ready for CodeQL and third-party tools
 
-  ## 🤝 Contributing
+  ## Contributing
 
   Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
-  ## 📄 License
+  ## License
 
   This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-  ## 🆘 Support
+  ## Support
 
-  - 📖 [Documentation](https://github.com/drengskapur/terraform-github-gitflow)
-  - 🐛 [Issue Tracker](https://github.com/drengskapur/terraform-github-gitflow/issues)
-  - 💬 [Discussions](https://github.com/drengskapur/terraform-github-gitflow/discussions)
+  - [Documentation](https://github.com/drengskapur/terraform-github-gitflow)
+  - [Issue Tracker](https://github.com/drengskapur/terraform-github-gitflow/issues)
+  - [Discussions](https://github.com/drengskapur/terraform-github-gitflow/discussions)
 output:
   file: "README.md"
   mode: inject

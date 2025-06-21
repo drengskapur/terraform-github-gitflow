@@ -1,5 +1,5 @@
 ---
-name: 🐛 Bug Report
+name: Bug Report
 about: Report a reproducible issue with the terraform-github-gitflow module
 title: "[BUG] <short description>"
 labels:
@@ -8,11 +8,11 @@ labels:
 assignees: ""
 ---
 
-## 🐛 Bug Description
+## Bug Description
 
 A clear and concise description of what the bug is.
 
-## 🔄 To Reproduce
+## To Reproduce
 
 Steps to reproduce the behavior:
 
@@ -27,22 +27,22 @@ Steps to reproduce the behavior:
 2. Run `terraform plan/apply`
 3. See error
 
-## ✅ Expected Behavior
+## Expected Behavior
 
 A clear and concise description of what you expected to happen.
 
-## 🚫 Actual Behavior
+## Actual Behavior
 
 A clear and concise description of what actually happened.
 
-## 📋 Environment
+## Environment
 
 - **Terraform version**: [e.g. 1.9.0]
 - **GitHub provider version**: [e.g. 6.6.0]
 - **Operating System**: [e.g. macOS 14.0]
 - **Module version**: [e.g. 1.0.0]
 
-## 📄 Configuration
+## Configuration
 
 <details>
 <summary>Terraform Configuration</summary>
@@ -54,7 +54,7 @@ A clear and concise description of what actually happened.
 
 </details>
 
-## 📊 Terraform Output
+## Terraform Output
 
 <details>
 <summary>Error Output</summary>
@@ -65,11 +65,11 @@ A clear and concise description of what actually happened.
 
 </details>
 
-## 📝 Additional Context
+## Additional Context
 
 Add any other context about the problem here.
 
-## ✔️ Checklist
+## Checklist
 
 - [ ] I have searched the [existing issues](../../issues) for duplicates
 - [ ] I have reproduced this issue with the **latest** module version
@@ -77,6 +77,6 @@ Add any other context about the problem here.
 - [ ] I have included **logs/output** where appropriate
 - [ ] I have included the Terraform version, provider version and operating system
 
-## 🔍 Possible Solution
+## Possible Solution
 
 If you have ideas on how to fix this, please describe them here.

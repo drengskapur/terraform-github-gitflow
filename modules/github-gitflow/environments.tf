@@ -5,24 +5,24 @@
 locals {
   envs = {
     dev = var.enable_gitflow && var.enable_dev_environment ? {
-      name     = "development"
-      branches = [var.develop_branch_name]
+      name      = "development"
+      branches  = [var.develop_branch_name]
       reviewers = var.dev_env_reviewers
-      wait     = 0
+      wait      = 0
     } : null
 
     stage = var.enable_gitflow && var.enable_stage_environment ? {
-      name     = "staging"
-      branches = ["release/*"]
+      name      = "staging"
+      branches  = ["release/*"]
       reviewers = var.stage_env_reviewers
-      wait     = 10
+      wait      = 10
     } : null
 
     prod = var.enable_prod_environment ? {
-      name     = "production"
-      branches = [var.main_branch_name]
+      name      = "production"
+      branches  = [var.main_branch_name]
       reviewers = var.prod_env_reviewers
-      wait     = 30
+      wait      = 30
     } : null
   }
 
@@ -31,8 +31,8 @@ locals {
 }
 
 resource "github_repository_environment" "this" {
-  for_each   = local.pruned_envs
-  repository = github_repository.this.name
+  for_each    = local.pruned_envs
+  repository  = github_repository.this.name
   environment = each.value.name
 
   wait_timer          = each.value.wait
@@ -52,8 +52,8 @@ resource "github_repository_environment" "this" {
 }
 
 resource "github_repository_environment_deployment_policy" "branch_policy" {
-  for_each   = local.pruned_envs
-  repository = github_repository.this.name
-  environment = github_repository_environment.this[each.key].environment
+  for_each       = local.pruned_envs
+  repository     = github_repository.this.name
+  environment    = github_repository_environment.this[each.key].environment
   branch_pattern = join(",", each.value.branches)
-} 
+}

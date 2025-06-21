@@ -19,10 +19,10 @@ module "github_gitflow" {
   repository_visibility = "private"
 
   # Optional: Security features
-  enable_advanced_security                = true
-  enable_secret_scanning                  = true
-  enable_secret_scanning_push_protection  = true
-  enable_dependabot_security_updates      = true
+  enable_advanced_security               = true
+  enable_secret_scanning                 = true
+  enable_secret_scanning_push_protection = true
+  enable_dependabot_security_updates     = true
 
   # Optional: Branch protection settings
   main_branch_require_signed_commits = true
@@ -30,7 +30,7 @@ module "github_gitflow" {
   # Optional: Bypass actors for emergency access
   bypass_actors = [
     {
-      actor_id    = "1"  # OrganizationAdmin
+      actor_id    = "1" # OrganizationAdmin
       actor_type  = "OrganizationAdmin"
       bypass_mode = "always"
     }

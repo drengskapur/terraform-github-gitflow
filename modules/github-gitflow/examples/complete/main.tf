@@ -6,9 +6,9 @@ module "gitflow_repository" {
   repository_name = "gitflow-repo"
 
   # Full GitFlow Configuration
-  enable_gitflow           = true
-  enable_develop_branch    = true
-  set_develop_as_default   = false  # Keep main as default for GitHub features
+  enable_gitflow         = true
+  enable_develop_branch  = true
+  set_develop_as_default = false # Keep main as default for GitHub features
 
   # Repository settings
   repo_has_wiki     = true
@@ -20,9 +20,9 @@ module "gitflow_repository" {
   enable_hotfix_branches  = true
 
   # Enhanced Protection Features
-  enable_tag_protection    = true
-  enable_push_rules        = true
-  enable_codeowners_file   = true
+  enable_tag_protection  = true
+  enable_push_rules      = true
+  enable_codeowners_file = true
 
   # Required CI/CD workflows
   required_workflows = [
@@ -35,7 +35,7 @@ module "gitflow_repository" {
   commit_author_email_pattern = "@acme-corp\\.com$"
 
   # File restrictions for security
-  max_file_size_mb = 10
+  max_file_size_mb        = 10
   blocked_file_extensions = ["exe", "zip", "tar.gz", "dmg", "pkg", "msi"]
 
   # Comprehensive CODEOWNERS
@@ -46,22 +46,22 @@ module "gitflow_repository" {
     # Frontend applications
     /frontend/ @frontend-team
     /ui/ @frontend-team @ux-team
-    
+
     # Backend services
     /backend/ @backend-team
     /api/ @backend-team @security-team
-    
+
     # Infrastructure and deployment
     /terraform/ @devops-team @security-team
     /k8s/ @devops-team
     /.github/ @devops-team
     /Dockerfile* @devops-team
-    
+
     # Security-sensitive files
     /secrets/ @security-team
     /.env* @security-team
     /security/ @security-team
-    
+
     # Documentation
     /docs/ @tech-writers @product-team
     README.md @tech-writers
@@ -78,12 +78,12 @@ module "gitflow_repository" {
 
   # Branch-specific overrides
   main_branch_overrides = {
-    required_reviews = 3  # Extra strict for production
+    required_reviews = 3 # Extra strict for production
   }
 
   develop_branch_overrides = {
     required_reviews = 2
-    status_checks = ["ci", "security-scan", "integration-tests"]
+    status_checks    = ["ci", "security-scan", "integration-tests"]
   }
 
   # Emergency bypass for critical incidents
@@ -96,10 +96,10 @@ module "gitflow_repository" {
   ]
 
   # Security features - full suite
-  enable_advanced_security                = true
-  enable_secret_scanning                  = true
-  enable_secret_scanning_push_protection  = true
-  enable_dependabot_security_updates      = true
+  enable_advanced_security               = true
+  enable_secret_scanning                 = true
+  enable_secret_scanning_push_protection = true
+  enable_dependabot_security_updates     = true
 
   # Webhook for external integrations
   enable_webhook = true
@@ -122,8 +122,8 @@ module "trunk_based_repository" {
   repository_name = "trunk-based-repo"
 
   # Trunk-based development - disable GitFlow
-  enable_gitflow         = false
-  enable_develop_branch  = false
+  enable_gitflow        = false
+  enable_develop_branch = false
 
   # Repository settings
   repo_has_wiki     = false
@@ -131,7 +131,7 @@ module "trunk_based_repository" {
 
   # Only main branch protection
   main_branch_overrides = {
-    required_reviews = 1  # Lighter process for trunk-based
+    required_reviews       = 1 # Lighter process for trunk-based
     require_linear_history = false
   }
 
@@ -146,13 +146,13 @@ module "trunk_based_repository" {
 
   # Only production environment for deployments
   enable_prod_environment = true
-  prod_env_reviewers     = ["ops-team"]
+  prod_env_reviewers      = ["ops-team"]
 
   # Security features
-  enable_advanced_security                = true
-  enable_secret_scanning                  = true
-  enable_secret_scanning_push_protection  = true
-  enable_dependabot_security_updates      = true
+  enable_advanced_security               = true
+  enable_secret_scanning                 = true
+  enable_secret_scanning_push_protection = true
+  enable_dependabot_security_updates     = true
 
   # Allow UI management of topics for flexibility
   manage_topics_in_terraform = false
@@ -173,4 +173,4 @@ output "gitflow_configuration" {
 
 output "trunk_based_configuration" {
   value = module.trunk_based_repository.gitflow_configuration
-} 
+}

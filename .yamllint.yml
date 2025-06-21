@@ -1,11 +1,122 @@
+# yamllint configuration
+# https://yamllint.readthedocs.io/en/stable/configuration.html
+
 extends: default
+
+# Ignore specific files or patterns
+ignore: |
+  .tox/
+  .venv/
+  node_modules/
+  vendor/
+
 rules:
+  # Line length - be reasonable but not too strict
   line-length:
     max: 120
     level: warning
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+
+  # Comments formatting
   comments:
+    require-starting-space: true
+    ignore-shebangs: true
     min-spaces-from-content: 1
+
+  # Disable comment indentation check (too strict for most cases)
   comments-indentation: disable
+
+  # Indentation rules
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Truthy values - be explicit
   truthy:
     allowed-values: ["true", "false"]
     check-keys: false
+    level: warning
+
+  # Brackets and braces
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: 0
+    max-spaces-inside-empty: 0
+
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+    min-spaces-inside-empty: 0
+    max-spaces-inside-empty: 0
+
+  # Colons
+  colons:
+    max-spaces-before: 0
+    max-spaces-after: 1
+
+  # Commas
+  commas:
+    max-spaces-before: 0
+    min-spaces-after: 1
+    max-spaces-after: 1
+
+  # Empty lines
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 0
+
+  # Empty values in mappings
+  empty-values:
+    forbid-in-block-mappings: false
+    forbid-in-flow-mappings: true
+
+  # Key duplicates
+  key-duplicates: enable
+
+  # Key ordering (disabled - too restrictive)
+  key-ordering: disable
+
+  # New line at end of file
+  new-line-at-end-of-file: enable
+
+  # New lines
+  new-lines:
+    type: unix
+
+  # Octal values
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+
+  # Quoted strings
+  quoted-strings:
+    quote-type: any
+    required: only-when-needed
+    extra-required: []
+    extra-allowed: []
+    allow-quoted-quotes: false
+
+  # Trailing spaces
+  trailing-spaces: enable
+
+  # Document start marker (---)
+  document-start:
+    present: false
+
+  # Document end marker (...)
+  document-end:
+    present: false
+
+  # Hyphens in lists
+  hyphens:
+    max-spaces-after: 1
+
+  # Anchors
+  anchors:
+    forbid-undeclared-aliases: true
+    forbid-duplicated-anchors: true
+    forbid-unused-anchors: true

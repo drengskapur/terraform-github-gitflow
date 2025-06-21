@@ -19,6 +19,6 @@ terraform {
 # 3. Provide token directly (not recommended for production)
 
 provider "github" {
-  owner = "your-github-username-or-org"  # Replace with your GitHub username/org
+  owner = "your-github-username-or-org" # Replace with your GitHub username/org
   # token = var.github_token  # Optional: leave unset to use GITHUB_TOKEN env var
 }

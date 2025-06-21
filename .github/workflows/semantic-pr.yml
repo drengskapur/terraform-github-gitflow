@@ -6,7 +6,6 @@ on:
       - edited
       - synchronize
 
-# Only allow read permissions by default
 permissions:
   contents: read
 

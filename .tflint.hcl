@@ -5,22 +5,21 @@ plugin "terraform" {
   preset  = "recommended"
 }
 
-# Provider-specific plugins (uncomment as needed)
 # plugin "aws" {
 #   enabled = true
-#   version = "0.32.0"
+#   version = "0.40.0"
 #   source  = "github.com/terraform-linters/tflint-ruleset-aws"
 # }
 
 # plugin "azurerm" {
 #   enabled = true
-#   version = "0.27.0"
+#   version = "0.28.0"
 #   source  = "github.com/terraform-linters/tflint-ruleset-azurerm"
 # }
 
 # plugin "google" {
 #   enabled = true
-#   version = "0.29.0"
+#   version = "0.32.0"
 #   source  = "github.com/terraform-linters/tflint-ruleset-google"
 # }
 
@@ -63,4 +62,4 @@ rule "terraform_required_version" {
 # Require provider version constraints
 rule "terraform_required_providers" {
   enabled = true
-} 
+}

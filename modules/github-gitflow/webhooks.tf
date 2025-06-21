@@ -15,4 +15,4 @@ resource "github_repository_webhook" "gitflow" {
 
   events = var.webhook_events
   active = true
-} 
+}

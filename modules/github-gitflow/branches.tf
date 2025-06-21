@@ -5,66 +5,66 @@ locals {
   branch_rulesets = {
     main = merge(
       {
-        include = [var.main_branch_name]
-        enforcement = "active"
-        required_reviews = 2
-        strict_checks   = true
+        include                = [var.main_branch_name]
+        enforcement            = "active"
+        required_reviews       = 2
+        strict_checks          = true
         require_linear_history = true
         require_signed_commits = var.main_branch_require_signed_commits
-        status_checks = var.main_branch_status_checks
-        ordinal = 1
+        status_checks          = var.main_branch_status_checks
+        ordinal                = 1
       },
       var.main_branch_overrides
     )
 
     develop = var.enable_gitflow && var.enable_develop_branch ? merge(
       {
-        include = [var.develop_branch_name]
-        enforcement = "active"
-        required_reviews = 1
-        strict_checks   = false
+        include                = [var.develop_branch_name]
+        enforcement            = "active"
+        required_reviews       = 1
+        strict_checks          = false
         require_linear_history = false
         require_signed_commits = var.develop_branch_require_signed_commits
-        status_checks = var.develop_branch_status_checks
-        ordinal = 10
+        status_checks          = var.develop_branch_status_checks
+        ordinal                = 10
       },
       var.develop_branch_overrides
     ) : null
 
     feature = var.enable_gitflow && var.enable_feature_branches ? {
-      include = ["feature/*", "bugfix/*"]
-      enforcement = "active"
-      required_reviews = 0
-      strict_checks   = false
+      include                = ["feature/*", "bugfix/*"]
+      enforcement            = "active"
+      required_reviews       = 0
+      strict_checks          = false
       require_linear_history = false
       require_signed_commits = false
-      name_pattern    = "^((feature)|(bugfix))\\/[-0-9A-Za-z_]+$"
-      status_checks = []
-      ordinal = 20
+      name_pattern           = "^((feature)|(bugfix))\\/[-0-9A-Za-z_]+$"
+      status_checks          = []
+      ordinal                = 20
     } : null
 
     release = var.enable_gitflow && var.enable_release_branches ? {
-      include = ["release/*"]
-      enforcement = "active"
-      required_reviews = 2
-      strict_checks   = true
+      include                = ["release/*"]
+      enforcement            = "active"
+      required_reviews       = 2
+      strict_checks          = true
       require_linear_history = true
       require_signed_commits = var.release_branch_require_signed_commits
-      name_pattern    = "^release\\/v[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
-      status_checks = var.release_branch_status_checks
-      ordinal = 30
+      name_pattern           = "^release\\/v[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+      status_checks          = var.release_branch_status_checks
+      ordinal                = 30
     } : null
 
     hotfix = var.enable_gitflow && var.enable_hotfix_branches ? {
-      include = ["hotfix/*"]
-      enforcement = "active"
-      required_reviews = 1
-      strict_checks   = true
+      include                = ["hotfix/*"]
+      enforcement            = "active"
+      required_reviews       = 1
+      strict_checks          = true
       require_linear_history = true
       require_signed_commits = var.hotfix_branch_require_signed_commits
-      name_pattern    = "^hotfix\\/v[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
-      status_checks = var.hotfix_branch_status_checks
-      ordinal = 40
+      name_pattern           = "^hotfix\\/v[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+      status_checks          = var.hotfix_branch_status_checks
+      ordinal                = 40
     } : null
   }
 
@@ -73,7 +73,7 @@ locals {
 }
 
 resource "github_repository_ruleset" "branches" {
-  for_each   = local.pruned_branch_rulesets
+  for_each = local.pruned_branch_rulesets
 
   name        = "${each.key}-ruleset"
   repository  = github_repository.this.name
@@ -88,12 +88,12 @@ resource "github_repository_ruleset" "branches" {
   }
 
   rules {
-    creation                      = false
-    deletion                      = true
-    non_fast_forward              = true
-    update                        = true
-    required_linear_history       = lookup(each.value, "require_linear_history", false)
-    required_signatures           = lookup(each.value, "require_signed_commits", false)
+    creation                = false
+    deletion                = true
+    non_fast_forward        = true
+    update                  = true
+    required_linear_history = lookup(each.value, "require_linear_history", false)
+    required_signatures     = lookup(each.value, "require_signed_commits", false)
 
     # reviews
     pull_request {
@@ -209,11 +209,11 @@ resource "github_repository_ruleset" "tags" {
 # Push rules for file restrictions
 ###############################################################################
 
-# TODO: Push rulesets are supported by GitHub but specific push rules are not yet 
-# implemented in the Terraform GitHub provider. The provider supports target = "push" 
+# TODO: Push rulesets are supported by GitHub but specific push rules are not yet
+# implemented in the Terraform GitHub provider. The provider supports target = "push"
 # but not the specific rule types like file_path_restriction, file_extension_restriction, etc.
 # See: https://github.com/integrations/terraform-provider-github/issues/2394
-# 
+#
 # When support is added, this would enable blocking large files and restricted
 # file extensions across the entire repository and fork network:
 #
