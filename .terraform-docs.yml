@@ -1,9 +1,11 @@
-formatter: "markdown"
-version: ""
+formatter: "markdown table"
+version: ">= 0.16.0, < 1.0.0"
 header-from: main.tf
 footer-from: ""
 recursive:
-  enabled: false
+  enabled: true
+  path: modules
+  include-main: false
 sections:
   hide: []
   show: []
@@ -174,7 +176,7 @@ settings:
   anchor: true
   color: true
   default: true
-  description: false
+  description: true
   escape: true
   hide-empty: false
   html: true
