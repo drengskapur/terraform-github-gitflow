@@ -297,7 +297,7 @@ jobs:
 
             # Safety check 3: Repository must be private
             local visibility=$(gh repo view "$repo_full_name" --json visibility --jq '.visibility' 2>/dev/null || echo "unknown")
-            if [[ "$visibility" != "private" ]]; then
+            if [[ "$visibility" != "PRIVATE" ]]; then
               echo "SAFETY CHECK FAILED: Repository '$repo_name' is not private (visibility: $visibility)"
               echo "Skipping deletion for safety"
               return 1

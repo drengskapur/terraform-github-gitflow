@@ -46,7 +46,10 @@ resource "github_repository_environment" "this" {
   dynamic "reviewers" {
     for_each = length(each.value.reviewers) > 0 ? [1] : []
     content {
-      teams = [for r in each.value.reviewers : r if r != ""]
+      # Note: GitHub API expects team IDs (numbers), not team names (strings)
+      # For now, we'll comment this out until team IDs are provided
+      # teams = [for r in each.value.reviewers : r if r != ""]
+      users = each.value.reviewers
     }
   }
 }

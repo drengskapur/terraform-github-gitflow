@@ -366,7 +366,7 @@ variable "develop_branch_overrides" {
 variable "bypass_actors" {
   description = "List of actors (users/teams/apps) allowed to bypass restrictions."
   type = list(object({
-    actor_id    = string
+    actor_id    = number
     actor_type  = string # USER, TEAM, INTEGRATION
     bypass_mode = string # always, pull_request, push
   }))
@@ -397,19 +397,19 @@ variable "enable_prod_environment" {
 
 variable "dev_env_reviewers" {
   type        = list(string)
-  description = "List of teams/users who can review development deployments."
+  description = "List of GitHub usernames who can review development deployments."
   default     = []
 }
 
 variable "stage_env_reviewers" {
   type        = list(string)
-  description = "List of teams/users who can review staging deployments."
+  description = "List of GitHub usernames who can review staging deployments."
   default     = []
 }
 
 variable "prod_env_reviewers" {
   type        = list(string)
-  description = "List of teams/users who can review production deployments."
+  description = "List of GitHub usernames who can review production deployments."
   default     = []
 }
 
