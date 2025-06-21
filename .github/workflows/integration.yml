@@ -1,0 +1,162 @@
+name: Integration Tests
+
+"on":
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "*.tf"
+      - "examples/**"
+      - ".github/workflows/integration.yml"
+  workflow_dispatch: {}
+  # Run after CI passes
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TERRAFORM_VERSION: "1.10.3"
+
+jobs:
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-24.04
+    # Only run if CI workflow succeeded (when triggered by workflow_run)
+    if: |
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        example:
+          - minimal
+          - complete
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Create ephemeral test repository
+        id: repo
+        run: |
+          # Use test organization instead of repository owner
+          OWNER="terraform-gitflow-tests"
+          TIMESTAMP=$(date +%s)
+          REPO_NAME="temp-integration-${{ matrix.example }}-${{ github.run_id }}-${TIMESTAMP}"
+
+          # Safety check: ensure names contain required safety prefixes
+          if [[ ! "$REPO_NAME" =~ ^temp-integration- ]]; then
+            echo "ERROR: Repository name '$REPO_NAME' does not contain required safety prefix 'temp-integration-'"
+            exit 1
+          fi
+
+          echo "Creating temporary repository: $OWNER/$REPO_NAME"
+          gh repo create "$OWNER/$REPO_NAME" --private --confirm
+          echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
+          echo "full_name=$OWNER/$REPO_NAME" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
+
+      - name: Terraform Init
+        working-directory: examples/${{ matrix.example }}
+        run: terraform init -backend=false
+
+      - name: Terraform Apply
+        working-directory: examples/${{ matrix.example }}
+        run: |
+          terraform apply -auto-approve \
+            -var="github_owner=terraform-gitflow-tests" \
+            -var="repository_name=${{ steps.repo.outputs.repo_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
+
+      - name: Assert branch protection
+        run: |
+          echo "Testing branch protection enforcement..."
+          git clone --quiet "https://x-access-token:${GH_TOKEN}@github.com/${{ steps.repo.outputs.full_name }}.git" repo
+          cd repo
+          git config user.email "integration-test@example.com"
+          git config user.name "Integration Test"
+          echo "$(date)" > protection-test.txt
+          git add protection-test.txt
+          git commit -m "test: branch protection validation"
+
+          # Attempt push to protected branch (should fail)
+          set +e
+          git push origin develop 2>&1 | tee /tmp/push_output.txt
+          STATUS=${PIPESTATUS[0]}
+          set -e
+
+          if [ "$STATUS" -eq 0 ]; then
+            echo "❌ ERROR: Push to protected branch succeeded - protection not enforced"
+            cat /tmp/push_output.txt
+            exit 1
+          else
+            echo "✅ Branch protection working correctly (exit status: $STATUS)"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
+
+      - name: Terraform Destroy
+        if: always()
+        working-directory: examples/${{ matrix.example }}
+        run: |
+          terraform init -backend=false
+          terraform destroy -auto-approve \
+            -var="github_owner=terraform-gitflow-tests" \
+            -var="repository_name=${{ steps.repo.outputs.repo_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
+
+      - name: Delete ephemeral repository
+        if: always()
+        run: |
+          safe_delete_repo() {
+            local repo_full_name="$1"
+            local repo_name=$(basename "$repo_full_name")
+
+            # Safety checks
+            if [[ ! "$repo_name" =~ ^temp-integration- ]]; then
+              echo "⚠️ SAFETY: Repository '$repo_name' doesn't match expected pattern"
+              return 1
+            fi
+
+            if [[ ! "$repo_name" =~ ${{ github.run_id }} ]]; then
+              echo "⚠️ SAFETY: Repository '$repo_name' doesn't contain run ID"
+              return 1
+            fi
+
+            local visibility=$(gh repo view "$repo_full_name" --json visibility --jq '.visibility' 2>/dev/null || echo "NOT_FOUND")
+            if [[ "$visibility" != "PRIVATE" ]]; then
+              echo "⚠️ SAFETY: Repository not private or not found (visibility: $visibility)"
+              return 1
+            fi
+
+            echo "🗑️ Deleting: $repo_full_name"
+            gh repo delete "$repo_full_name" --yes 2>/dev/null || echo "⚠️ Delete failed (may already be deleted)"
+          }
+
+          if [[ -n "${{ steps.repo.outputs.full_name }}" ]]; then
+            safe_delete_repo "${{ steps.repo.outputs.full_name }}"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}

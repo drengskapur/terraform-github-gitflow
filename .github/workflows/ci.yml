@@ -21,8 +21,6 @@ concurrency:
 env:
   TERRAFORM_VERSION: "1.10.3"
   TFLINT_VERSION: "v0.54.0"
-  TERRAFORM_DOCS_VERSION: "v0.19.0"
-  CHECKOV_VERSION: "3.2.443"
 
 jobs:
   validate:
@@ -53,9 +51,10 @@ jobs:
         id: validate
         run: terraform validate
 
-  tflint:
-    name: TFLint
+  lint:
+    name: Lint
     runs-on: ubuntu-24.04
+    needs: validate
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,96 +78,12 @@ jobs:
       - name: Run TFLint
         run: tflint --format=compact
 
-  security:
-    name: Security Scanning
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Run Trivy (modern replacement for tfsec)
-        uses: aquasecurity/trivy-action@0.31.0
-        with:
-          scan-type: "config"
-          scan-ref: "."
-          format: "sarif"
-          output: "trivy-results.sarif"
-
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        continue-on-error: true
-        with:
-          sarif_file: "trivy-results.sarif"
-
-      - name: Run Checkov
-        id: checkov
-        uses: bridgecrewio/checkov-action@v12
-        continue-on-error: true
-        with:
-          directory: .
-          framework: terraform
-          output_format: sarif
-          output_file_path: checkov-results.sarif
-
-      - name: Upload Checkov results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('checkov-results.sarif') != ''
-        continue-on-error: true
-        with:
-          sarif_file: checkov-results.sarif
-
-  docs:
-    name: Documentation
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
-          fetch-depth: 0
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: Install terraform-docs
-        run: |
-          curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.19.0/terraform-docs-v0.19.0-$(uname)-amd64.tar.gz
-          tar -xzf terraform-docs.tar.gz
-          chmod +x terraform-docs
-          sudo mv terraform-docs /usr/local/bin/terraform-docs
-
-      - name: Generate documentation
-        run: |
-          terraform-docs --config .terraform-docs.yml markdown table --output-file README.md --output-mode inject .
-
-      - name: Commit documentation changes
-        if: github.event_name == 'push'
-        run: |
-          git config --local user.email "terraform-docs[bot]@users.noreply.github.com"
-          git config --local user.name "terraform-docs[bot]"
-          git add README.md
-          if git diff --staged --quiet; then
-            echo "No documentation changes to commit"
-          else
-            git commit -m "docs: update README.md with terraform-docs"
-            git push
-          fi
-
-  examples:
+  test:
     name: Test Examples
     runs-on: ubuntu-24.04
+    needs:
+      - validate
+      - lint
     permissions:
       contents: read
     strategy:
@@ -207,151 +122,24 @@ jobs:
         working-directory: examples/${{ matrix.example }}
         run: terraform validate -no-color
 
-  integration:
-    name: Integration Test (ephemeral repo)
+  ci-success:
+    name: CI Success
     runs-on: ubuntu-24.04
-    # Run only on main/develop pushes or manual dispatch to avoid API rate limits on PRs
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    permissions:
-      contents: read
-    needs:
-      - validate
-      - examples
-    strategy:
-      matrix:
-        example:
-          - minimal
-          - complete
+    needs: [validate, lint, test]
+    if: always()
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      # - name: Authenticate gh CLI
-      #   run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create ephemeral test repository
-        id: repo
+      - name: Check all jobs
         run: |
-          # Use test organization instead of repository owner
-          OWNER="terraform-gitflow-tests"
-          TIMESTAMP=$(date +%s)
-          REPO_NAME="temp-ci-integration-${{ matrix.example }}-${{ github.run_id }}-${TIMESTAMP}"
-
-          # Safety check: ensure names contain required safety prefixes
-          if [[ ! "$REPO_NAME" =~ ^temp-ci- ]]; then
-            echo "ERROR: Repository name '$REPO_NAME' does not contain required safety prefix 'temp-ci-'"
+          if [[ "${{ needs.validate.result }}" != "success" ]]; then
+            echo "❌ Validation failed"
             exit 1
           fi
-
-          echo "Creating temporary repository: $OWNER/$REPO_NAME"
-          gh repo create "$OWNER/$REPO_NAME" --private --confirm
-          echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
-          echo "full_name=$OWNER/$REPO_NAME" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
-
-      - name: Terraform Init
-        working-directory: examples/${{ matrix.example }}
-        run: terraform init -backend=false
-
-      - name: Terraform Apply
-        working-directory: examples/${{ matrix.example }}
-        run: |
-          terraform apply -auto-approve \
-            -var="github_owner=terraform-gitflow-tests" \
-            -var="repository_name=${{ steps.repo.outputs.repo_name }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
-
-      - name: Assert branch protection (push should be blocked)
-        run: |
-          echo "Attempting to push directly to protected branch to ensure ruleset enforcement..."
-          git clone --quiet "https://x-access-token:${GH_TOKEN}@github.com/${{ steps.repo.outputs.full_name }}.git" repo
-          cd repo
-          git config user.email "ci-bot@example.com"
-          git config user.name  "CI Bot"
-          echo "$(date)" > ci-protection-test.txt
-          git add ci-protection-test.txt
-          git commit -m "chore: protection test"
-          set +e
-          git push origin develop 2>&1 | tee /tmp/push_output.txt
-          STATUS=${PIPESTATUS[0]}
-          set -e
-          if [ "$STATUS" -eq 0 ]; then
-            echo "ERROR: push to protected branch succeeded – ruleset not enforced" >&2
-            cat /tmp/push_output.txt
+          if [[ "${{ needs.lint.result }}" != "success" ]]; then
+            echo "❌ Linting failed"
             exit 1
-          else
-            echo "✓ push was blocked as expected (exit status $STATUS)"
           fi
-        env:
-          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
-
-      - name: Terraform Destroy
-        if: always()
-        working-directory: examples/${{ matrix.example }}
-        run: |
-          # Ensure providers are available before destroy
-          terraform init -backend=false
-          terraform destroy -auto-approve \
-            -var="github_owner=terraform-gitflow-tests" \
-            -var="repository_name=${{ steps.repo.outputs.repo_name }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
-
-      - name: Delete ephemeral repository
-        if: always()
-        run: |
-          # Function to safely delete a repository with multiple safety checks
-          safe_delete_repo() {
-            local repo_full_name="$1"
-            local repo_name=$(basename "$repo_full_name")
-
-            # Safety check 1: Repository name must contain temp-ci prefix
-            if [[ ! "$repo_name" =~ ^temp-ci- ]]; then
-              echo "SAFETY CHECK FAILED: Repository '$repo_name' does not contain required 'temp-ci-' prefix"
-              echo "Skipping deletion for safety"
-              return 1
-            fi
-
-            # Safety check 2: Repository name must contain run ID
-            if [[ ! "$repo_name" =~ ${{ github.run_id }} ]]; then
-              echo "SAFETY CHECK FAILED: Repository '$repo_name' does not contain run ID '${{ github.run_id }}'"
-              echo "Skipping deletion for safety"
-              return 1
-            fi
-
-            # Safety check 3: Repository must be private
-            local visibility=$(gh repo view "$repo_full_name" --json visibility --jq '.visibility' 2>/dev/null || echo "unknown")
-            if [[ "$visibility" != "PRIVATE" ]]; then
-              echo "SAFETY CHECK FAILED: Repository '$repo_name' is not private (visibility: $visibility)"
-              echo "Skipping deletion for safety"
-              return 1
-            fi
-
-            echo "All safety checks passed for repository: $repo_name"
-            echo "Deleting temporary repository: $repo_full_name"
-
-            if gh repo delete "$repo_full_name" --yes 2>/dev/null; then
-              echo "✓ Successfully deleted: $repo_full_name"
-            else
-              echo "⚠ Failed to delete: $repo_full_name (may have already been deleted or access denied)"
-            fi
-          }
-
-          if [[ -n "${{ steps.repo.outputs.full_name }}" ]]; then
-            safe_delete_repo "${{ steps.repo.outputs.full_name }}"
-          else
-            echo "No repository name found in outputs"
+          if [[ "${{ needs.test.result }}" != "success" ]]; then
+            echo "❌ Testing failed"
+            exit 1
           fi
-        env:
-          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
+          echo "✅ All CI checks passed"
