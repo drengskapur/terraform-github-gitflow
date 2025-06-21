@@ -5,7 +5,7 @@ locals {
   branch_rulesets = {
     main = merge(
       {
-        include                = [var.main_branch_name]
+        include                = ["refs/heads/${var.main_branch_name}"]
         enforcement            = "active"
         required_reviews       = 2
         strict_checks          = true
@@ -19,7 +19,7 @@ locals {
 
     develop = var.enable_gitflow && var.enable_develop_branch ? merge(
       {
-        include                = [var.develop_branch_name]
+        include                = ["refs/heads/${var.develop_branch_name}"]
         enforcement            = "active"
         required_reviews       = 1
         strict_checks          = false
@@ -32,7 +32,7 @@ locals {
     ) : null
 
     feature = var.enable_gitflow && var.enable_feature_branches ? {
-      include                = ["feature/*", "bugfix/*"]
+      include                = ["refs/heads/feature/*", "refs/heads/bugfix/*"]
       enforcement            = "active"
       required_reviews       = 0
       strict_checks          = false
@@ -44,7 +44,7 @@ locals {
     } : null
 
     release = var.enable_gitflow && var.enable_release_branches ? {
-      include                = ["release/*"]
+      include                = ["refs/heads/release/*"]
       enforcement            = "active"
       required_reviews       = 2
       strict_checks          = true
@@ -56,7 +56,7 @@ locals {
     } : null
 
     hotfix = var.enable_gitflow && var.enable_hotfix_branches ? {
-      include                = ["hotfix/*"]
+      include                = ["refs/heads/hotfix/*"]
       enforcement            = "active"
       required_reviews       = 1
       strict_checks          = true
@@ -180,7 +180,7 @@ resource "github_repository_ruleset" "tags" {
 
   conditions {
     ref_name {
-      include = ["v*", "V*"]
+      include = ["refs/tags/v*", "refs/tags/V*"]
       exclude = []
     }
   }

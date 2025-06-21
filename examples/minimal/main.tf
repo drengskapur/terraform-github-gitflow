@@ -42,10 +42,13 @@ module "gitflow" {
   enable_release_branches = false # Disable for fresh repos - no release/* branches exist
   enable_hotfix_branches  = false # Disable for fresh repos - no hotfix/* branches exist
 
-  # Environment Configuration
-  enable_dev_environment   = true
-  enable_stage_environment = true
-  enable_prod_environment  = true
+  # Disable tag protection for fresh repos (causes ruleset errors on personal accounts)
+  enable_tag_protection = false
+
+  # Environment Configuration - disable problematic environments for fresh repos
+  enable_dev_environment   = true  # Keep dev as it's simpler
+  enable_stage_environment = false # Disable staging - causes billing plan errors
+  enable_prod_environment  = false # Disable production - causes billing plan errors
 
   # Repository Settings
   repo_allow_merge_commit = true

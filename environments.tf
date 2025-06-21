@@ -39,7 +39,8 @@ resource "github_repository_environment" "this" {
 
   # Only enable prevent_self_review if reviewers are configured and it's a paid plan feature
   # This prevents errors on personal accounts that don't have paid plans
-  prevent_self_review = length(each.value.reviewers) > 0
+  # Prevent self-review requires paid GitHub plans; disable for compatibility
+  prevent_self_review = false
 
   deployment_branch_policy {
     protected_branches     = contains(each.value.branches, var.main_branch_name)
