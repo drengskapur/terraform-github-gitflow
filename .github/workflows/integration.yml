@@ -49,7 +49,7 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
-      - name: Create ephemeral test repository
+      - name: Generate repository name
         id: repo
         run: |
           # Use test organization instead of repository owner
@@ -63,12 +63,9 @@ jobs:
             exit 1
           fi
 
-          echo "Creating temporary repository: $OWNER/$REPO_NAME"
-          gh repo create "$OWNER/$REPO_NAME" --private --confirm
+          echo "Will create repository: $OWNER/$REPO_NAME"
           echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
           echo "full_name=$OWNER/$REPO_NAME" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
 
       - name: Terraform Init
         working-directory: examples/${{ matrix.example }}
@@ -86,10 +83,17 @@ jobs:
       - name: Assert branch protection
         run: |
           echo "Testing branch protection enforcement..."
+
+          # Wait a moment for repository to be fully ready
+          sleep 5
+
+          # Clone the repository
           git clone --quiet "https://x-access-token:${GH_TOKEN}@github.com/${{ steps.repo.outputs.full_name }}.git" repo
           cd repo
           git config user.email "integration-test@example.com"
           git config user.name "Integration Test"
+
+          # Create a test commit
           echo "$(date)" > protection-test.txt
           git add protection-test.txt
           git commit -m "test: branch protection validation"
@@ -139,9 +143,15 @@ jobs:
               return 1
             fi
 
+            # Check if repository exists
             local visibility=$(gh repo view "$repo_full_name" --json visibility --jq '.visibility' 2>/dev/null || echo "NOT_FOUND")
+            if [[ "$visibility" == "NOT_FOUND" ]]; then
+              echo "ℹ️ Repository '$repo_full_name' not found - likely never created or already deleted"
+              return 0
+            fi
+
             if [[ "$visibility" != "PRIVATE" ]]; then
-              echo "⚠️ SAFETY: Repository not private or not found (visibility: $visibility)"
+              echo "⚠️ SAFETY: Repository not private (visibility: $visibility)"
               return 1
             fi
 
@@ -151,6 +161,8 @@ jobs:
 
           if [[ -n "${{ steps.repo.outputs.full_name }}" ]]; then
             safe_delete_repo "${{ steps.repo.outputs.full_name }}"
+          else
+            echo "ℹ️ No repository name generated - nothing to clean up"
           fi
         env:
           GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
