@@ -272,12 +272,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
 
-      - name: Verify repository configuration
-        continue-on-error: true # Listing rulesets on private repos may fail on free plans; don't fail the build
+      - name: Assert branch protection (push should be blocked)
         run: |
-          echo "Verifying repository was configured correctly..."
-          gh repo view "${{ steps.repo.outputs.full_name }}" --json name,visibility,hasWikiEnabled
-          gh api repos/${{ steps.repo.outputs.full_name }}/rulesets --jq '.[] | {name: .name, enforcement: .enforcement}'
+          echo "Attempting to push directly to protected branch to ensure ruleset enforcement..."
+          git clone --quiet "https://x-access-token:${GH_TOKEN}@github.com/${{ steps.repo.outputs.full_name }}.git" repo
+          cd repo
+          git config user.email "ci-bot@example.com"
+          git config user.name  "CI Bot"
+          echo "$(date)" > ci-protection-test.txt
+          git add ci-protection-test.txt
+          git commit -m "chore: protection test"
+          set +e
+          git push origin develop 2>&1 | tee /tmp/push_output.txt
+          STATUS=${PIPESTATUS[0]}
+          set -e
+          if [ "$STATUS" -eq 0 ]; then
+            echo "ERROR: push to protected branch succeeded – ruleset not enforced" >&2
+            cat /tmp/push_output.txt
+            exit 1
+          else
+            echo "✓ push was blocked as expected (exit status $STATUS)"
+          fi
         env:
           GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
 
