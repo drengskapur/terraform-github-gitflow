@@ -162,6 +162,13 @@ jobs:
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
+      - name: Setup example variables
+        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        run: |
+          if [ -f terraform.tfvars.example ]; then
+            cp terraform.tfvars.example terraform.tfvars
+          fi
+
       - name: Terraform Init
         working-directory: modules/github-gitflow/examples/${{ matrix.example }}
         run: terraform init -backend=false
@@ -172,11 +179,7 @@ jobs:
 
       - name: Terraform Plan
         working-directory: modules/github-gitflow/examples/${{ matrix.example }}
-        run: |
-          terraform plan -input=false \
-            -var="github_owner=example-org" \
-            -var="repository_name=example-repo-${{ matrix.example }}" \
-            -var="trunk_repository_name=example-trunk-repo"
+        run: terraform plan -input=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
