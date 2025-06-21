@@ -1,12 +1,14 @@
 name: Dependency Review
-on:
+
+"on":
   pull_request:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
 
 permissions:
   contents: read
 
-# Avoid duplicate runs on same PR head
 concurrency:
   group: dependency-review-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
@@ -17,5 +19,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
