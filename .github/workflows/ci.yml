@@ -225,7 +225,8 @@ jobs:
       - name: Create ephemeral test repository
         id: repo
         run: |
-          OWNER="${{ github.repository_owner }}"
+          # Use test organization instead of repository owner
+          OWNER="terraform-gitflow-tests"
           TIMESTAMP=$(date +%s)
           REPO_NAME="temp-ci-integration-${{ matrix.example }}-${{ github.run_id }}-${TIMESTAMP}"
 
@@ -250,7 +251,7 @@ jobs:
         working-directory: examples/${{ matrix.example }}
         run: |
           terraform apply -auto-approve \
-            -var="github_owner=${{ github.repository_owner }}" \
+            -var="github_owner=terraform-gitflow-tests" \
             -var="repository_name=${{ steps.repo.outputs.repo_name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
@@ -270,7 +271,7 @@ jobs:
           # Ensure providers are available before destroy
           terraform init -backend=false
           terraform destroy -auto-approve \
-            -var="github_owner=${{ github.repository_owner }}" \
+            -var="github_owner=terraform-gitflow-tests" \
             -var="repository_name=${{ steps.repo.outputs.repo_name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
