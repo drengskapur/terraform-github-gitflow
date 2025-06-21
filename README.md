@@ -1,148 +1,89 @@
 # Terraform GitHub GitFlow Module
 
-A Terraform module for setting up GitFlow branching strategy with idiomatic branch protection rules on GitHub repositories.
+A comprehensive, production-ready Terraform module for implementing GitFlow workflows on GitHub repositories with modern security features and enterprise-grade configuration.
 
 ## Features
 
-- ✅ **GitFlow branching strategy** setup (main + develop branches)
-- ✅ **Idiomatic branch protection** with modern best practices
-- ✅ **Automatic develop branch creation**
-- ✅ **Customizable review requirements**
-- ✅ **Configurable CI/CD status checks**
-- ✅ **Production-ready defaults**
+- **GitFlow Implementation**: Complete GitFlow branch model (main, develop, feature, release, hotfix)
+- **Branch Protection**: Advanced branch protection rules with customizable policies
+- **Security Features**: GitHub Advanced Security, secret scanning, and Dependabot integration
+- **Environment Management**: Development, staging, and production environments with reviewers
+- **Webhook Integration**: Optional GitFlow automation webhooks
+- **Compliance**: CODEOWNERS file management and required status checks
+- **Validation**: Comprehensive input validation with helpful error messages
 
-## Usage
+## GitFlow Workflow
 
-```hcl
-module "gitflow" {
-  source = "drengskapur/gitflow/github"
+This module implements the standard GitFlow workflow:
 
-  repository_full_name             = "owner/repo-name"
-  main_branch_required_reviews     = 2
-  develop_branch_required_reviews  = 1
-  main_branch_status_checks        = ["ci/build", "ci/test"]
-  develop_branch_status_checks     = ["ci/build"]
-  require_code_owner_reviews       = true
-  require_signed_commits           = false
-}
+```mermaid
+gitGraph
+    commit id: "Initial"
+    branch develop
+    checkout develop
+    commit id: "Setup"
+
+    branch feature/user-auth
+    checkout feature/user-auth
+    commit id: "Add login"
+    commit id: "Add signup"
+    checkout develop
+    merge feature/user-auth
+    commit id: "Integrate auth"
+
+    branch release/v1.0
+    checkout release/v1.0
+    commit id: "Prepare v1.0"
+    commit id: "Fix bugs"
+    checkout main
+    merge release/v1.0
+    commit id: "Release v1.0" tag: "v1.0.0"
+
+    checkout develop
+    merge release/v1.0
+
+    branch feature/dashboard
+    checkout feature/dashboard
+    commit id: "Add dashboard"
+    checkout develop
+    merge feature/dashboard
+
+    checkout main
+    branch hotfix/security-fix
+    checkout hotfix/security-fix
+    commit id: "Security patch"
+    checkout main
+    merge hotfix/security-fix
+    commit id: "Hotfix v1.0.1" tag: "v1.0.1"
+
+    checkout develop
+    merge hotfix/security-fix
 ```
 
-## Requirements
+### Branch Types
 
-| Name      | Version |
-| --------- | ------- |
-| terraform | >= 1.0  |
-| github    | ~> 6.0  |
+- **main**: Production-ready code
+- **develop**: Integration branch for features
+- **feature/**: New features (merged to develop)
+- **release/**: Release preparation (merged to main and develop)
+- **hotfix/**: Critical fixes (merged to main and develop)
 
-## Providers
+## Security Considerations
 
-| Name   | Version |
-| ------ | ------- |
-| github | ~> 6.0  |
+- Enable GitHub Advanced Security for comprehensive scanning
+- Use signed commits for production branches
+- Configure appropriate bypass actors with minimal permissions
+- Regularly review and update CODEOWNERS
+- Monitor security alerts and Dependabot updates
 
-## Resources
+## Contributing
 
-| Name                             | Type        |
-| -------------------------------- | ----------- |
-| github_branch.develop            | resource    |
-| github_branch_protection.develop | resource    |
-| github_branch_protection.main    | resource    |
-| github_repository.repo           | data source |
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## Inputs
+## License
 
-| Name                            | Description                                               | Type           | Default | Required |
-| ------------------------------- | --------------------------------------------------------- | -------------- | ------- | :------: |
-| repository_full_name            | Full name of the repository (owner/repo-name)             | `string`       | n/a     |   yes    |
-| main_branch_required_reviews    | Number of required approving reviews for main branch      | `number`       | `1`     |    no    |
-| develop_branch_required_reviews | Number of required approving reviews for develop branch   | `number`       | `1`     |    no    |
-| main_branch_status_checks       | List of status check contexts required for main branch    | `list(string)` | `[]`    |    no    |
-| develop_branch_status_checks    | List of status check contexts required for develop branch | `list(string)` | `[]`    |    no    |
-| require_code_owner_reviews      | Require code owner reviews for main branch                | `bool`         | `false` |    no    |
-| require_signed_commits          | Require signed commits for main branch                    | `bool`         | `false` |    no    |
-
-## Outputs
-
-| Name                         | Description                              |
-| ---------------------------- | ---------------------------------------- |
-| repository_name              | Name of the repository                   |
-| repository_full_name         | Full name of the repository              |
-| main_branch_protection_id    | ID of the main branch protection rule    |
-| develop_branch_protection_id | ID of the develop branch protection rule |
-| develop_branch_created       | Whether the develop branch was created   |
-| branch_protection_summary    | Summary of branch protection settings    |
-
-## Branch Protection Rules
-
-### Main Branch
-
-- Requires pull request reviews (configurable count)
-- Dismisses stale reviews on new commits
-- Requires approval from someone other than author
-- Blocks direct pushes and force pushes
-- Cannot be deleted
-- Optionally requires code owner reviews
-- Optionally requires signed commits
-
-### Develop Branch
-
-- Requires pull request reviews (configurable count)
-- Dismisses stale reviews on new commits
-- Allows merge commits (non-linear history)
-- Blocks direct pushes and force pushes
-- More permissive than main branch
-
-## Examples
-
-### Basic Usage
-
-```hcl
-module "branch_protection" {
-  source = "./modules/github-branch-protection"
-
-  repository_full_name = "myorg/myrepo"
-}
-```
-
-### With CI/CD Integration
-
-```hcl
-module "branch_protection" {
-  source = "./modules/github-branch-protection"
-
-  repository_full_name             = "myorg/myrepo"
-  main_branch_required_reviews     = 2
-  main_branch_status_checks        = [
-    "ci/build",
-    "ci/test",
-    "ci/security-scan",
-    "ci/lint"
-  ]
-  develop_branch_status_checks     = [
-    "ci/build",
-    "ci/test"
-  ]
-  require_code_owner_reviews       = true
-}
-```
-
-### High Security Setup
-
-```hcl
-module "branch_protection" {
-  source = "./modules/github-branch-protection"
-
-  repository_full_name             = "myorg/sensitive-repo"
-  main_branch_required_reviews     = 3
-  require_code_owner_reviews       = true
-  require_signed_commits           = true
-  main_branch_status_checks        = [
-    "ci/build",
-    "ci/test",
-    "ci/security-scan",
-    "ci/dependency-check",
-    "ci/sast",
-    "ci/dast"
-  ]
-}
-```
+This module is released under the MIT License. See [LICENSE](LICENSE) for details.

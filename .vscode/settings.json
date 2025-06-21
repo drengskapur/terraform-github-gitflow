@@ -1,0 +1,245 @@
+{
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.trimAutoWhitespace": true,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.wordWrap": "bounded",
+  "editor.wordWrapColumn": 120,
+  "editor.tabSize": 2,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.minimap.enabled": false,
+  "editor.semanticHighlighting.enabled": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.eol": "\n",
+  "files.encoding": "utf8",
+  "files.exclude": {
+    "**/.terraform": true,
+    "**/.terraform.lock.hcl": false,
+    "**/terraform.tfstate": true,
+    "**/terraform.tfstate.backup": true,
+    "**/*.tfplan": true,
+    "**/crash.log": true,
+    "**/override.tf": false,
+    "**/override.tf.json": false,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.vscode/launch.json": false,
+    "**/.vscode/tasks.json": false
+  },
+  "files.watcherExclude": {
+    "**/.terraform/**": true,
+    "**/node_modules/**": true
+  },
+  "terraform.languageServer.enable": false,
+  "terraform.experimentalFeatures.validateOnSave": true,
+  "terraform.experimentalFeatures.prefillRequiredFields": true,
+  "yaml.format.enable": true,
+  "yaml.format.singleQuote": false,
+  "yaml.format.bracketSpacing": true,
+  "yaml.format.proseWrap": "preserve",
+  "yaml.format.printWidth": 120,
+  "yaml.validate": true,
+  "yaml.hover": true,
+  "yaml.completion": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": [
+      ".github/workflows/*.yml",
+      ".github/workflows/*.yaml"
+    ],
+    "https://json.schemastore.org/github-action.json": [
+      "action.yml",
+      "action.yaml"
+    ],
+    "https://raw.githubusercontent.com/helm/helm/master/pkg/chartutil/schema.json": [
+      "**/Chart.yaml",
+      "**/chart.yaml"
+    ],
+    "https://json.schemastore.org/helmfile.json": [
+      "**/helmfile.yaml",
+      "**/helmfile.yml"
+    ],
+    "https://json.schemastore.org/kustomization.json": [
+      "**/kustomization.yaml",
+      "**/kustomization.yml"
+    ],
+    "https://raw.githubusercontent.com/defenseunicorns/zarf/main/zarf.schema.json": [
+      "**/zarf.yaml",
+      "**/zarf.yml"
+    ]
+  },
+  "json.format.enable": true,
+  "json.format.keepLines": false,
+  "json.validate.enable": true,
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "terraform-registry-manifest.json"
+      ],
+      "url": "https://json.schemastore.org/terraform-registry-manifest.json"
+    },
+    {
+      "fileMatch": [
+        ".releaserc.json",
+        ".releaserc"
+      ],
+      "url": "https://json.schemastore.org/semantic-release.json"
+    },
+    {
+      "fileMatch": [
+        "package.json"
+      ],
+      "url": "https://json.schemastore.org/package.json"
+    },
+    {
+      "fileMatch": [
+        "tsconfig.json",
+        "tsconfig.*.json"
+      ],
+      "url": "https://json.schemastore.org/tsconfig.json"
+    },
+    {
+      "fileMatch": [
+        ".goreleaser.yml",
+        ".goreleaser.yaml",
+        "goreleaser.yml",
+        "goreleaser.yaml"
+      ],
+      "url": "https://goreleaser.com/static/schema.json"
+    }
+  ],
+  "markdown.preview.breaks": true,
+  "markdown.preview.linkify": true,
+  "markdown.preview.typographer": true,
+  "markdown.extension.toc.levels": "2..6",
+  "markdownlint.config": {
+    "MD013": {
+      "line_length": 120,
+      "code_blocks": false,
+      "tables": false
+    },
+    "MD033": false,
+    "MD041": false
+  },
+  "files.associations": {
+    "*.tf": "terraform",
+    "*.tfvars": "terraform",
+    "*.hcl": "terraform",
+    "*.tf.json": "json",
+    "*.tfstate": "json",
+    "*.tfplan": "json",
+    "Taskfile.yml": "yaml",
+    "Taskfile.yaml": "yaml",
+    "docker-compose*.yml": "dockercompose",
+    "docker-compose*.yaml": "dockercompose",
+    "Dockerfile*": "dockerfile",
+    "*.dockerfile": "dockerfile",
+    ".env*": "dotenv",
+    "*.env": "dotenv",
+    ".gitignore": "ignore",
+    ".dockerignore": "ignore",
+    ".terraformignore": "ignore",
+    "*.md": "markdown",
+    "LICENSE": "plaintext",
+    "CHANGELOG": "markdown",
+    "CHANGELOG.md": "markdown",
+    "CONTRIBUTING.md": "markdown",
+    "SECURITY.md": "markdown"
+  },
+  "[terraform]": {
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.wordWrap": "bounded",
+    "editor.wordWrapColumn": 120
+  },
+  "[terraform-vars]": {
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "advanced"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.wordWrap": "bounded",
+    "editor.wordWrapColumn": 120,
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.autofetchPeriod": 180,
+  "git.decorations.enabled": true,
+  "git.enableStatusBarSync": true,
+  "github.gitAuthentication": true,
+  "search.exclude": {
+    "**/.terraform": true,
+    "**/.terraform.lock.hcl": false,
+    "**/terraform.tfstate": true,
+    "**/terraform.tfstate.backup": true,
+    "**/*.tfplan": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/coverage": true
+  },
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.sortOrder": "type",
+  "explorer.fileNesting.enabled": false,
+  "explorer.fileNesting.patterns": {
+    "*.tf": "*.tfvars, *.tfplan, *.tfstate, *.tfstate.backup",
+    "terraform.tf": "terraform.tfvars, terraform.tfplan, terraform.tfstate*",
+    "main.tf": "variables.tf, outputs.tf, versions.tf, providers.tf, locals.tf, data.tf",
+    "Dockerfile": "*.dockerfile, .dockerignore, docker-compose*.yml, docker-compose*.yaml",
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb",
+    "README.md": "CHANGELOG.md, CONTRIBUTING.md, SECURITY.md, LICENSE, CODE_OF_CONDUCT.md",
+    ".gitignore": ".gitattributes, .gitmodules, .gitmessage, .mailmap, .git-blame*"
+  }
+}

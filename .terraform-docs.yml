@@ -1,0 +1,41 @@
+version: ">= 0.16.0, < 1.0.0"
+
+formatter: "markdown table"
+
+sections:
+  hide:
+    - header
+
+content: |-
+  {{ .Requirements }}
+
+  {{ .Providers }}
+
+  {{ .Modules }}
+
+  {{ .Resources }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
+
+output:
+  file: "USAGE.md"
+  mode: replace
+  template: |-
+    {{ .Content }}
+
+settings:
+  anchor: true
+  color: true
+  default: true
+  description: false
+  escape: true
+  hide-empty: false
+  html: true
+  indent: 2
+  lockfile: true
+  read-comments: true
+  required: true
+  sensitive: true
+  type: true

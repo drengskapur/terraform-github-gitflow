@@ -1,0 +1,72 @@
+name: Documentation
+
+"on":
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "*.tf"
+      - ".terraform-docs.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TERRAFORM_VERSION: "1.10.3"
+  TERRAFORM_DOCS_VERSION: "v0.19.0"
+
+jobs:
+  docs:
+    name: Generate Documentation
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Install terraform-docs
+        run: |
+          curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/${{ env.TERRAFORM_DOCS_VERSION }}/terraform-docs-${{ env.TERRAFORM_DOCS_VERSION }}-$(uname)-amd64.tar.gz
+          tar -xzf terraform-docs.tar.gz
+          chmod +x terraform-docs
+          sudo mv terraform-docs /usr/local/bin/terraform-docs
+
+      - name: Generate documentation
+        run: |
+          terraform-docs --config .terraform-docs.yml .
+
+      - name: Check for documentation changes
+        id: changes
+        run: |
+          if git diff --quiet USAGE.md; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No documentation changes detected"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Documentation changes detected"
+            git diff USAGE.md
+          fi
+
+      - name: Commit documentation changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "terraform-docs[bot]@users.noreply.github.com"
+          git config --local user.name "terraform-docs[bot]"
+          git add USAGE.md
+          git commit -m "docs: update USAGE.md with terraform-docs"
+          git push
