@@ -1,3 +1,2 @@
 github_owner          = "example-org"
 repository_name       = "example-complete-repo"
-trunk_repository_name = "example-trunk-repo"

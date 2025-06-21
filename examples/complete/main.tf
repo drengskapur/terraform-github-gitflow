@@ -119,7 +119,6 @@ module "gitflow_repository" {
   github_read_delay_ms  = 500
 }
 
-# Trunk-based repository module and outputs have been removed for CI testing
 output "gitflow_repo_url" {
   value = module.gitflow_repository.repository_html_url
 }
