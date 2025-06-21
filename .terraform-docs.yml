@@ -3,9 +3,7 @@ version: ">= 0.16.0, < 1.0.0"
 header-from: main.tf
 footer-from: ""
 recursive:
-  enabled: true
-  path: modules
-  include-main: false
+  enabled: false
 sections:
   hide: []
   show: []

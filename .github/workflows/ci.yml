@@ -134,20 +134,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
+          fetch-depth: 0
 
-      - name: Render terraform docs
-        uses: terraform-docs/gh-actions@v1.4.1
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          working-dir: .
-          output-file: README.md
-          output-method: inject
-          git-push: "true"
-          git-push-user-name: "terraform-docs[bot]"
-          git-push-user-email: "terraform-docs[bot]@users.noreply.github.com"
-          git-commit-message: "docs: update README.md with terraform-docs"
-          find-dir: "."
-          recursive: "false"
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Install terraform-docs
+        run: |
+          curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.19.0/terraform-docs-v0.19.0-$(uname)-amd64.tar.gz
+          tar -xzf terraform-docs.tar.gz
+          chmod +x terraform-docs
+          sudo mv terraform-docs /usr/local/bin/terraform-docs
+
+      - name: Generate documentation
+        run: |
+          terraform-docs markdown table --output-file README.md --output-mode inject .
+
+      - name: Commit documentation changes
+        if: github.event_name == 'push'
+        run: |
+          git config --local user.email "terraform-docs[bot]@users.noreply.github.com"
+          git config --local user.name "terraform-docs[bot]"
+          git add README.md
+          if git diff --staged --quiet; then
+            echo "No documentation changes to commit"
+          else
+            git commit -m "docs: update README.md with terraform-docs"
+            git push
+          fi
 
   examples:
     name: Test Examples
