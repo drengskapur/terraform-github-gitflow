@@ -44,8 +44,9 @@ module "gitflow" {
   enable_hotfix_branches  = false # Disable for fresh repos - no hotfix/* branches exist
 
   # Disable features that require GitHub Pro
-  enable_tag_protection = false # Requires GitHub Pro
-  enable_push_rules     = false # Requires GitHub Pro
+  enable_branch_protection_rulesets = false # Requires GitHub Pro for private repos
+  enable_tag_protection              = false # Requires GitHub Pro
+  enable_push_rules                  = false # Requires GitHub Pro
 
   # Environment Configuration - disable environments for GitHub Free plan
   enable_dev_environment   = false # Requires GitHub Pro or different token permissions

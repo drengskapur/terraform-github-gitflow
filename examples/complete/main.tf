@@ -48,9 +48,10 @@ module "gitflow_repository" {
   enable_hotfix_branches  = false # Disable for fresh repos - no hotfix/* branches exist
 
   # Enhanced Protection Features - disabled for GitHub Free plan in CI
-  enable_tag_protection  = false # Requires GitHub Pro
-  enable_push_rules      = false # Requires GitHub Pro
-  enable_codeowners_file = true
+  enable_branch_protection_rulesets = false # Requires GitHub Pro for private repos
+  enable_tag_protection              = false # Requires GitHub Pro
+  enable_push_rules                  = false # Requires GitHub Pro
+  enable_codeowners_file             = true
 
   # Corporate compliance
   commit_author_email_pattern = ""

@@ -220,7 +220,13 @@ variable "enable_release_branches" {
 
 variable "enable_hotfix_branches" {
   type        = bool
-  description = "Enable hotfix branch protection rules."
+  description = "Enable hotfix branch protection (hotfix/* branches)."
+  default     = true
+}
+
+variable "enable_branch_protection_rulesets" {
+  type        = bool
+  description = "Enable branch protection rulesets (requires GitHub Pro for private repos). Set to false for GitHub Free plans."
   default     = true
 }
 

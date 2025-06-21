@@ -73,7 +73,7 @@ locals {
 }
 
 resource "github_repository_ruleset" "branches" {
-  for_each = local.pruned_branch_rulesets
+  for_each = var.enable_branch_protection_rulesets ? local.pruned_branch_rulesets : {}
 
   name        = "${each.key}-ruleset"
   repository  = github_repository.this.name
@@ -175,7 +175,7 @@ resource "github_repository_ruleset" "branches" {
 ###############################################################################
 
 resource "github_repository_ruleset" "tags" {
-  count       = var.enable_tag_protection ? 1 : 0
+  count       = var.enable_branch_protection_rulesets && var.enable_tag_protection ? 1 : 0
   name        = "tag-protection"
   repository  = github_repository.this.name
   target      = "tag"
