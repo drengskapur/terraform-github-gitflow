@@ -195,6 +195,9 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
+      actions: read
+      metadata: read
+      repository-projects: read
     needs:
       - validate
       - examples
@@ -237,7 +240,7 @@ jobs:
           echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
           echo "full_name=$OWNER/$REPO_NAME" >> "$GITHUB_OUTPUT"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
 
       - name: Terraform Init
         working-directory: examples/${{ matrix.example }}
@@ -250,7 +253,7 @@ jobs:
             -var="github_owner=${{ github.repository_owner }}" \
             -var="repository_name=${{ steps.repo.outputs.repo_name }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
 
       - name: Verify repository configuration
         run: |
@@ -258,7 +261,7 @@ jobs:
           gh repo view "${{ steps.repo.outputs.full_name }}" --json name,visibility,hasWikiEnabled
           gh api repos/${{ steps.repo.outputs.full_name }}/rulesets --jq '.[] | {name: .name, enforcement: .enforcement}'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
 
       - name: Terraform Destroy
         if: always()
@@ -270,7 +273,7 @@ jobs:
             -var="github_owner=${{ github.repository_owner }}" \
             -var="repository_name=${{ steps.repo.outputs.repo_name }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
 
       - name: Delete ephemeral repository
         if: always()
@@ -318,4 +321,4 @@ jobs:
             echo "No repository name found in outputs"
           fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
