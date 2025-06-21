@@ -2,44 +2,28 @@ version: ">= 0.16.0, < 1.0.0"
 
 formatter: "markdown table"
 
-header-from: main.tf
-
 sections:
   hide:
     - header
 
 content: |-
-  ## Requirements
-
   {{ .Requirements }}
-
-  ## Providers
 
   {{ .Providers }}
 
-  ## Modules
-
   {{ .Modules }}
-
-  ## Resources
 
   {{ .Resources }}
 
-  ## Inputs
-
   {{ .Inputs }}
-
-  ## Outputs
 
   {{ .Outputs }}
 
 output:
-  file: "README.md"
-  mode: inject
+  file: "USAGE.md"
+  mode: replace
   template: |-
-    <!-- BEGIN_TF_DOCS -->
     {{ .Content }}
-    <!-- END_TF_DOCS -->
 
 settings:
   anchor: true
@@ -55,4 +39,3 @@ settings:
   required: true
   sensitive: true
   type: true
-# Trigger terraform-docs update
