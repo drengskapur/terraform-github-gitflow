@@ -19,15 +19,29 @@ resource "github_repository" "this" {
   # Repository topics (managed only when enabled)
   topics = var.manage_topics_in_terraform ? var.repository_topics : []
 
-  security_and_analysis {
-    advanced_security {
-      status = var.enable_advanced_security ? "enabled" : "disabled"
-    }
-    secret_scanning {
-      status = var.enable_secret_scanning ? "enabled" : "disabled"
-    }
-    secret_scanning_push_protection {
-      status = var.enable_secret_scanning_push_protection ? "enabled" : "disabled"
+  # Only include security_and_analysis block if any security features are enabled
+  # Setting these to "disabled" requires GitHub Enterprise on personal accounts
+  dynamic "security_and_analysis" {
+    for_each = var.enable_advanced_security || var.enable_secret_scanning || var.enable_secret_scanning_push_protection ? [1] : []
+    content {
+      dynamic "advanced_security" {
+        for_each = var.enable_advanced_security ? [1] : []
+        content {
+          status = "enabled"
+        }
+      }
+      dynamic "secret_scanning" {
+        for_each = var.enable_secret_scanning ? [1] : []
+        content {
+          status = "enabled"
+        }
+      }
+      dynamic "secret_scanning_push_protection" {
+        for_each = var.enable_secret_scanning_push_protection ? [1] : []
+        content {
+          status = "enabled"
+        }
+      }
     }
   }
 
