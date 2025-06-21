@@ -39,7 +39,7 @@
     "**/.terraform/**": true,
     "**/node_modules/**": true
   },
-  "terraform.languageServer.enable": true,
+  "terraform.languageServer.enable": false,
   "terraform.experimentalFeatures.validateOnSave": true,
   "terraform.experimentalFeatures.prefillRequiredFields": true,
   "yaml.format.enable": true,
