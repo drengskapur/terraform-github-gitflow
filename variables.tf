@@ -5,6 +5,16 @@
 variable "github_owner" {
   type        = string
   description = "GitHub user or organisation that owns the repository."
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$", var.github_owner))
+    error_message = "GitHub owner must contain only alphanumeric characters and hyphens, and cannot start or end with a hyphen."
+  }
+
+  validation {
+    condition     = length(var.github_owner) <= 39
+    error_message = "GitHub owner must be 39 characters or less."
+  }
 }
 
 variable "github_token" {
@@ -57,6 +67,21 @@ variable "github_max_retries" {
 variable "repository_name" {
   type        = string
   description = "Name of the repository to manage."
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9._-]+$", var.repository_name))
+    error_message = "Repository name must contain only alphanumeric characters, periods, underscores, and hyphens."
+  }
+
+  validation {
+    condition     = length(var.repository_name) <= 100
+    error_message = "Repository name must be 100 characters or less."
+  }
+
+  validation {
+    condition     = length(var.repository_name) >= 1
+    error_message = "Repository name cannot be empty."
+  }
 }
 
 variable "repository_visibility" {
@@ -141,12 +166,32 @@ variable "main_branch_name" {
   type        = string
   description = "Name of the main/production branch."
   default     = "main"
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9/_.-]+$", var.main_branch_name))
+    error_message = "Branch name must contain only alphanumeric characters, slashes, underscores, periods, and hyphens."
+  }
+
+  validation {
+    condition     = length(var.main_branch_name) <= 250
+    error_message = "Branch name must be 250 characters or less."
+  }
 }
 
 variable "develop_branch_name" {
   type        = string
   description = "Name of the develop/integration branch."
   default     = "develop"
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9/_.-]+$", var.develop_branch_name))
+    error_message = "Branch name must contain only alphanumeric characters, slashes, underscores, periods, and hyphens."
+  }
+
+  validation {
+    condition     = length(var.develop_branch_name) <= 250
+    error_message = "Branch name must be 250 characters or less."
+  }
 }
 
 variable "enable_develop_branch" {
@@ -371,6 +416,27 @@ variable "bypass_actors" {
     bypass_mode = string # always, pull_request, push
   }))
   default = []
+
+  validation {
+    condition = alltrue([
+      for actor in var.bypass_actors : contains(["USER", "TEAM", "INTEGRATION"], actor.actor_type)
+    ])
+    error_message = "Actor type must be one of: USER, TEAM, INTEGRATION."
+  }
+
+  validation {
+    condition = alltrue([
+      for actor in var.bypass_actors : contains(["always", "pull_request", "push"], actor.bypass_mode)
+    ])
+    error_message = "Bypass mode must be one of: always, pull_request, push."
+  }
+
+  validation {
+    condition = alltrue([
+      for actor in var.bypass_actors : actor.actor_id > 0
+    ])
+    error_message = "Actor ID must be a positive number (GitHub user/team/app ID)."
+  }
 }
 
 ###############################################################################
@@ -399,18 +465,54 @@ variable "dev_env_reviewers" {
   type        = list(string)
   description = "List of GitHub usernames who can review development deployments."
   default     = []
+
+  validation {
+    condition = alltrue([
+      for reviewer in var.dev_env_reviewers : can(regex("^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$", reviewer))
+    ])
+    error_message = "GitHub usernames must contain only alphanumeric characters and hyphens, and cannot start or end with a hyphen."
+  }
+
+  validation {
+    condition     = length(var.dev_env_reviewers) <= 6
+    error_message = "Maximum of 6 reviewers allowed per environment."
+  }
 }
 
 variable "stage_env_reviewers" {
   type        = list(string)
   description = "List of GitHub usernames who can review staging deployments."
   default     = []
+
+  validation {
+    condition = alltrue([
+      for reviewer in var.stage_env_reviewers : can(regex("^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$", reviewer))
+    ])
+    error_message = "GitHub usernames must contain only alphanumeric characters and hyphens, and cannot start or end with a hyphen."
+  }
+
+  validation {
+    condition     = length(var.stage_env_reviewers) <= 6
+    error_message = "Maximum of 6 reviewers allowed per environment."
+  }
 }
 
 variable "prod_env_reviewers" {
   type        = list(string)
   description = "List of GitHub usernames who can review production deployments."
   default     = []
+
+  validation {
+    condition = alltrue([
+      for reviewer in var.prod_env_reviewers : can(regex("^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$", reviewer))
+    ])
+    error_message = "GitHub usernames must contain only alphanumeric characters and hyphens, and cannot start or end with a hyphen."
+  }
+
+  validation {
+    condition     = length(var.prod_env_reviewers) <= 6
+    error_message = "Maximum of 6 reviewers allowed per environment."
+  }
 }
 
 ###############################################################################
@@ -427,6 +529,11 @@ variable "webhook_url" {
   type        = string
   description = "Webhook URL for GitFlow automation."
   default     = ""
+
+  validation {
+    condition     = var.webhook_url == "" || can(regex("^https?://", var.webhook_url))
+    error_message = "Webhook URL must be empty or start with http:// or https://."
+  }
 }
 
 variable "webhook_secret" {
