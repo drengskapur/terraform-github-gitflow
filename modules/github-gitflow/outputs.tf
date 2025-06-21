@@ -27,7 +27,7 @@ output "main_branch_name" {
 }
 
 output "develop_branch_name" {
-  value       = var.enable_develop_branch ? var.develop_branch_name : null
+  value       = var.enable_gitflow && var.enable_develop_branch ? var.develop_branch_name : null
   description = "Name of the develop branch (null if disabled)."
 }
 
@@ -41,8 +41,18 @@ output "main_branch_ruleset_id" {
 }
 
 output "develop_branch_ruleset_id" {
-  value       = var.enable_develop_branch ? github_repository_ruleset.branches["develop"].id : null
+  value       = var.enable_gitflow && var.enable_develop_branch ? github_repository_ruleset.branches["develop"].id : null
   description = "Ruleset ID for the develop branch (null if disabled)."
+}
+
+output "tag_protection_ruleset_id" {
+  value       = var.enable_tag_protection ? one(github_repository_ruleset.tags[*].id) : null
+  description = "Ruleset ID for tag protection (null if disabled)."
+}
+
+output "push_rules_ruleset_id" {
+  value       = null # Push rulesets not yet supported by Terraform GitHub provider
+  description = "Ruleset ID for push restrictions (not yet supported by provider)."
 }
 
 output "branch_rulesets" {
@@ -92,19 +102,28 @@ output "security_features" {
 
 output "gitflow_configuration" {
   value = {
+    enabled        = var.enable_gitflow
     main_branch    = var.main_branch_name
-    develop_branch = var.enable_develop_branch ? var.develop_branch_name : null
+    develop_branch = var.enable_gitflow && var.enable_develop_branch ? var.develop_branch_name : null
     
     branch_types = {
-      feature_branches = var.enable_feature_branches
-      release_branches = var.enable_release_branches
-      hotfix_branches  = var.enable_hotfix_branches
+      feature_branches = var.enable_gitflow && var.enable_feature_branches
+      release_branches = var.enable_gitflow && var.enable_release_branches
+      hotfix_branches  = var.enable_gitflow && var.enable_hotfix_branches
     }
     
     environments = {
-      development = var.enable_dev_environment
-      staging     = var.enable_stage_environment
+      development = var.enable_gitflow && var.enable_dev_environment
+      staging     = var.enable_gitflow && var.enable_stage_environment
       production  = var.enable_prod_environment
+    }
+    
+    protection_features = {
+      tag_protection     = var.enable_tag_protection
+      push_rules         = var.enable_push_rules
+      codeowners_file    = var.enable_codeowners_file
+      required_workflows = length(var.required_workflows) > 0
+      email_pattern      = var.commit_author_email_pattern != ""
     }
     
     webhook_enabled = var.enable_webhook

@@ -1,0 +1,186 @@
+formatter: "markdown"
+version: ""
+header-from: main.tf
+footer-from: ""
+recursive:
+  enabled: false
+sections:
+  hide: []
+  show: []
+content: |-
+  # Terraform GitHub GitFlow Module
+
+  A comprehensive, production-ready Terraform module for implementing GitFlow workflows on GitHub repositories with modern security features and idiomatic configuration.
+
+  ## 🚀 Features
+
+  - **Complete GitFlow Implementation**: Support for main, develop, feature, release, and hotfix branches
+  - **Modern GitHub Provider**: Uses latest GitHub provider features (v6.6.0+) including repository rulesets
+  - **Security First**: Advanced Security, secret scanning, Dependabot, and vulnerability alerts
+  - **Flexible Configuration**: Extensive customization options with sensible defaults
+  - **GitHub Environments**: Automated deployment workflows with approval processes
+  - **Webhook Support**: Optional automation hooks for GitFlow processes
+  - **Idiomatic Structure**: Follows Terraform and GitHub provider best practices
+
+  ## 📋 Requirements
+
+  {{ .Requirements }}
+
+  ## 🏗️ Providers
+
+  {{ .Providers }}
+
+  ## 📥 Inputs
+
+  {{ .Inputs }}
+
+  ## 📤 Outputs
+
+  {{ .Outputs }}
+
+  ## 🎯 Usage
+
+  ### Basic Example
+
+  ```hcl
+  module "gitflow" {
+    source = "drengskapur/gitflow/github"
+    version = "~> 1.0"
+
+    github_owner    = "your-org"
+    repository_name = "your-repo"
+
+    # Enable GitFlow branches
+    enable_develop_branch   = true
+    enable_feature_branches = true
+    enable_release_branches = true
+    enable_hotfix_branches  = true
+
+    # Security features
+    enable_advanced_security                = true
+    enable_secret_scanning                  = true
+    enable_secret_scanning_push_protection  = true
+    enable_dependabot_security_updates      = true
+
+    # Environment reviewers
+    prod_env_reviewers = ["ops-team", "security-team"]
+  }
+  ```
+
+  ### Advanced Configuration
+
+  ```hcl
+  module "gitflow" {
+    source = "drengskapur/gitflow/github"
+    version = "~> 1.0"
+
+    github_owner    = "your-org"
+    repository_name = "your-repo"
+
+    # Custom branch configuration
+    main_branch_name    = "production"
+    develop_branch_name = "integration"
+
+    # Override main branch rules
+    main_branch_overrides = {
+      required_reviews = 3
+      require_linear_history = true
+    }
+
+    # Custom status checks
+    main_branch_status_checks = ["ci/build", "security/scan"]
+
+    # Bypass actors for emergencies
+    bypass_actors = [
+      {
+        id   = "12345"
+        type = "TEAM"
+        mode = "always"
+      }
+    ]
+
+    # Webhook automation
+    enable_webhook = true
+    webhook_url    = "https://your-automation.example.com/webhook"
+    webhook_events = ["push", "pull_request", "release"]
+  }
+  ```
+
+  ## 🌿 GitFlow Branch Structure
+
+  This module implements the complete GitFlow workflow:
+
+  ```
+  main (production)
+  ├── develop (integration)
+  │   ├── feature/user-auth
+  │   ├── feature/payment-system
+  │   └── feature/dashboard
+  ├── release/v1.2.0
+  └── hotfix/v1.1.1
+  ```
+
+  ### Branch Protection Rules
+
+  | Branch Type | Reviews | Signed Commits | Linear History | Status Checks |
+  |-------------|---------|----------------|----------------|---------------|
+  | **main**    | 2       | ✅ Required    | ✅ Required    | ✅ Strict     |
+  | **develop** | 1       | ⚪ Optional    | ⚪ Optional    | ✅ Strict     |
+  | **feature** | 0       | ⚪ Optional    | ⚪ Optional    | ⚪ Optional   |
+  | **release** | 2       | ✅ Required    | ✅ Required    | ✅ Strict     |
+  | **hotfix**  | 1       | ✅ Required    | ✅ Required    | ✅ Strict     |
+
+  ## 🌍 GitHub Environments
+
+  The module creates three deployment environments:
+
+  - **Development**: Deploys from `develop` branch, no wait time
+  - **Staging**: Deploys from `release/*` branches, 10-minute wait
+  - **Production**: Deploys from `main` branch, 30-minute wait + reviewers
+
+  ## 🔒 Security Features
+
+  - **Advanced Security**: GitHub Advanced Security features
+  - **Secret Scanning**: Automatic secret detection with push protection
+  - **Dependabot**: Automated security updates for dependencies
+  - **Vulnerability Alerts**: Notifications for known vulnerabilities
+  - **Signed Commits**: Required for production branches
+  - **Code Scanning**: Integration ready for CodeQL and third-party tools
+
+  ## 🤝 Contributing
+
+  Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+  ## 📄 License
+
+  This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+  ## 🆘 Support
+
+  - 📖 [Documentation](https://github.com/drengskapur/terraform-github-gitflow)
+  - 🐛 [Issue Tracker](https://github.com/drengskapur/terraform-github-gitflow/issues)
+  - 💬 [Discussions](https://github.com/drengskapur/terraform-github-gitflow/discussions)
+output:
+  file: "README.md"
+  mode: inject
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
+sort:
+  enabled: true
+  by: name
+settings:
+  anchor: true
+  color: true
+  default: true
+  description: false
+  escape: true
+  hide-empty: false
+  html: true
+  indent: 2
+  lockfile: true
+  read-comments: true
+  required: true
+  sensitive: true
+  type: true

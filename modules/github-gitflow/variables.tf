@@ -20,6 +20,36 @@ variable "github_base_url" {
   default     = null
 }
 
+variable "github_write_delay_ms" {
+  type        = number
+  description = "Time in milliseconds to sleep between writes to avoid rate limiting."
+  default     = 1000
+}
+
+variable "github_read_delay_ms" {
+  type        = number
+  description = "Time in milliseconds to sleep between reads to avoid rate limiting."
+  default     = 0
+}
+
+variable "github_retry_delay_ms" {
+  type        = number
+  description = "Time in milliseconds to sleep before retrying a request."
+  default     = 1000
+}
+
+variable "github_retry_max_delay_ms" {
+  type        = number
+  description = "Maximum time in milliseconds to sleep before retrying a request."
+  default     = 30000
+}
+
+variable "github_max_retries" {
+  type        = number
+  description = "Maximum number of retries for a request."
+  default     = 3
+}
+
 ###############################################################################
 # CORE REPOSITORY CONFIGURATION
 ###############################################################################
@@ -101,6 +131,12 @@ variable "enable_dependabot_security_updates" {
 # GITFLOW BRANCH CONFIGURATION
 ###############################################################################
 
+variable "enable_gitflow" {
+  type        = bool
+  description = "Enable full GitFlow workflow (develop/release/hotfix branches). Set to false for trunk-based development."
+  default     = true
+}
+
 variable "main_branch_name" {
   type        = string
   description = "Name of the main/production branch."
@@ -115,7 +151,7 @@ variable "develop_branch_name" {
 
 variable "enable_develop_branch" {
   type        = bool
-  description = "Create and manage the develop branch."
+  description = "Create and manage the develop branch (automatically enabled when enable_gitflow is true)."
   default     = true
 }
 
@@ -219,6 +255,88 @@ variable "conventional_commit_regex" {
   default     = "^(feat|fix|docs|style|refactor|perf|test|chore)(\\(.+\\))?: .+$"
 }
 
+variable "commit_author_email_pattern" {
+  type        = string
+  description = "Regex pattern for commit author email addresses (e.g., '@your-org.com$')."
+  default     = ""
+}
+
+variable "required_workflows" {
+  type = list(object({
+    path       = string
+    repository = string
+    ref        = optional(string, "main")
+  }))
+  description = "List of required GitHub Actions workflows that must pass."
+  default     = []
+}
+
+variable "enable_tag_protection" {
+  type        = bool
+  description = "Enable tag protection for release tags."
+  default     = true
+}
+
+variable "enable_push_rules" {
+  type        = bool
+  description = "Enable push rules to restrict file types and sizes."
+  default     = true
+}
+
+variable "max_file_size_mb" {
+  type        = number
+  description = "Maximum file size in MB for push rules."
+  default     = 5
+}
+
+variable "blocked_file_extensions" {
+  type        = list(string)
+  description = "File extensions to block in push rules."
+  default     = ["exe", "zip", "tar.gz", "dmg", "pkg", "deb", "rpm"]
+}
+
+variable "restricted_file_paths" {
+  type        = list(string)
+  description = "File paths to restrict in push rules (using fnmatch patterns)."
+  default     = []
+}
+
+variable "restricted_file_extensions" {
+  type        = list(string)
+  description = "File extensions to restrict in push rules."
+  default     = []
+}
+
+variable "max_file_path_length" {
+  type        = number
+  description = "Maximum file path length for push rules (0 = disabled)."
+  default     = 0
+}
+
+variable "default_branch" {
+  type        = string
+  description = "Default branch name for the repository."
+  default     = "main"
+}
+
+variable "enable_codeowners_file" {
+  type        = bool
+  description = "Create and manage a CODEOWNERS file."
+  default     = true
+}
+
+variable "codeowners_content" {
+  type        = string
+  description = "Content for the CODEOWNERS file."
+  default     = "# Global code owners\n* @admins\n"
+}
+
+variable "manage_topics_in_terraform" {
+  type        = bool
+  description = "Whether to manage repository topics in Terraform (true) or allow manual UI edits (false)."
+  default     = false
+}
+
 ###############################################################################
 # BRANCH OVERRIDES
 ###############################################################################
@@ -242,9 +360,9 @@ variable "develop_branch_overrides" {
 variable "bypass_actors" {
   description = "List of actors (users/teams/apps) allowed to bypass restrictions."
   type = list(object({
-    id   = string
-    type = string # USER, TEAM, INTEGRATION
-    mode = string # always, pull_request, push
+    actor_id    = string
+    actor_type  = string # USER, TEAM, INTEGRATION
+    bypass_mode = string # always, pull_request, push
   }))
   default = []
 }

@@ -5,8 +5,8 @@ module "github_gitflow" {
   source = "./modules/github-gitflow"
 
   # Required variables
-  github_owner    = "your-github-username-or-org"
-  repository_name = "your-repository-name"
+  github_owner    = var.github_owner
+  repository_name = "example-repository"
 
   # Optional: Configure GitFlow workflow
   enable_gitflow = true
