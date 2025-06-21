@@ -26,59 +26,48 @@ variable "repository_name" {
 }
 
 module "gitflow" {
-  source = "../../"
+  source = "../.."
 
-  github_owner    = var.github_owner
-  repository_name = var.repository_name
+  # Repository Configuration
+  github_owner          = var.github_owner
+  repository_name       = var.repository_name
+  repository_visibility = "private"
 
-  # GitFlow Configuration
-  enable_gitflow         = true # Set to false for trunk-based development
-  enable_develop_branch  = true
-  set_develop_as_default = false # Keep main as default branch
+  # Basic GitFlow Configuration
+  enable_gitflow = true
 
-  # Repository settings
-  repo_has_wiki      = true
-  prod_env_reviewers = ["ops-team"]
+  # Branch Configuration - disable rulesets for branches that don't exist in fresh repos
+  enable_develop_branch   = true
+  enable_feature_branches = false # Disable for fresh repos - no feature/* branches exist
+  enable_release_branches = false # Disable for fresh repos - no release/* branches exist
+  enable_hotfix_branches  = false # Disable for fresh repos - no hotfix/* branches exist
 
-  # Enable all GitFlow branch types
-  enable_feature_branches = true
-  enable_release_branches = true
-  enable_hotfix_branches  = true
+  # Environment Configuration
+  enable_dev_environment   = true
+  enable_stage_environment = true
+  enable_prod_environment  = true
 
-  # Enhanced Protection Features
-  enable_tag_protection  = true
-  enable_push_rules      = true
-  enable_codeowners_file = true
+  # Repository Settings
+  repo_allow_merge_commit = true
+  repo_allow_rebase_merge = true
+  repo_allow_squash_merge = true
+  repo_has_wiki           = true
+  repo_has_projects       = false
 
-  # Corporate email enforcement (optional)
-  commit_author_email_pattern = "@your-company\\.com$"
-
-  # File restrictions
-  max_file_size_mb        = 5
-  blocked_file_extensions = ["exe", "zip", "tar.gz", "dmg"]
-
-  # CODEOWNERS configuration
-  codeowners_content = <<-EOT
-    # Global owners
-    * @admins @security-team
-
-    # Frontend code
-    /frontend/ @frontend-team
-
-    # Backend code
-    /backend/ @backend-team
-
-    # Infrastructure
-    /terraform/ @devops-team
-    /.github/ @devops-team
-  EOT
-
-  # Security features (disabled for CI compatibility with free GitHub accounts)
+  # Security Settings (disabled for personal accounts)
   enable_advanced_security               = false
   enable_secret_scanning                 = false
   enable_secret_scanning_push_protection = false
-  enable_dependabot_security_updates     = true # This works on free accounts
+  enable_dependabot_security_updates     = true
 
-  # Topics management
-  manage_topics_in_terraform = true
+  # Branch Protection
+  main_branch_require_signed_commits    = true
+  develop_branch_require_signed_commits = false
+
+  # Commit Requirements
+  conventional_commit_regex   = "^(feat|fix|docs|style|refactor|perf|test|chore)(\\(.+\\))?: .+$"
+  commit_author_email_pattern = "@your-company\\.com$"
+
+  # Webhook Configuration
+  enable_webhook = false
 }

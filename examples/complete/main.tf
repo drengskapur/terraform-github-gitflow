@@ -50,10 +50,10 @@ module "gitflow_repository" {
   repo_has_wiki     = true
   repo_has_projects = true
 
-  # All GitFlow branch types
-  enable_feature_branches = true
-  enable_release_branches = true
-  enable_hotfix_branches  = true
+  # Enable all GitFlow branch types - disabled for integration testing with fresh repos
+  enable_feature_branches = false # Disable for fresh repos - no feature/* branches exist
+  enable_release_branches = false # Disable for fresh repos - no release/* branches exist
+  enable_hotfix_branches  = false # Disable for fresh repos - no hotfix/* branches exist
 
   # Enhanced Protection Features
   enable_tag_protection  = true

@@ -35,8 +35,11 @@ resource "github_repository_environment" "this" {
   repository  = github_repository.this.name
   environment = each.value.name
 
-  wait_timer          = each.value.wait
-  prevent_self_review = true
+  wait_timer = each.value.wait
+
+  # Only enable prevent_self_review if reviewers are configured and it's a paid plan feature
+  # This prevents errors on personal accounts that don't have paid plans
+  prevent_self_review = length(each.value.reviewers) > 0
 
   deployment_branch_policy {
     protected_branches     = contains(each.value.branches, var.main_branch_name)
