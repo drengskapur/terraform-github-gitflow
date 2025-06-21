@@ -1,5 +1,4 @@
 # Complete example demonstrating advanced GitFlow features
-
 terraform {
   required_providers {
     github = {
@@ -32,8 +31,6 @@ variable "trunk_repository_name" {
   type        = string
   default     = "trunk-based-repo"
 }
-
-
 
 module "gitflow_repository" {
   source = "../../"
@@ -98,8 +95,8 @@ module "gitflow_repository" {
 
   # Environment configuration
   enable_dev_environment   = true
-  enable_stage_environment = true
-  enable_prod_environment  = true
+  enable_stage_environment = false # Disabled for CI on free plans
+  enable_prod_environment  = false # Disabled for CI on free plans
 
   dev_env_reviewers   = ["dev-leads"]
   stage_env_reviewers = ["qa-team", "dev-leads"]
@@ -157,8 +154,8 @@ module "trunk_based_repository" {
   enable_push_rules     = true
 
   # Only production environment for deployments
-  enable_prod_environment = true
-  prod_env_reviewers      = ["ops-team"]
+  enable_prod_environment = false # Disabled for CI on free plans
+  prod_env_reviewers      = []
 
   # Security features - Enable these if you have GitHub Enterprise or Advanced Security
   # For production use with GitHub Enterprise, set these to true:
