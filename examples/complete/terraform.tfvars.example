@@ -1,2 +1,2 @@
-github_owner          = "example-org"
-repository_name       = "example-complete-repo"
+github_owner    = "example-org"
+repository_name = "example-complete-repo"
