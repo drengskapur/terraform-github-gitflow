@@ -2,22 +2,16 @@ name: Integration Tests
 
 "on":
   push:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
     paths:
       - "*.tf"
       - "examples/**"
       - ".github/workflows/integration.yml"
   workflow_dispatch: {}
-  # Run after CI passes
   workflow_run:
     workflows: ["CI"]
-    types:
-      - completed
-    branches:
-      - main
-      - develop
+    types: [completed]
+    branches: [main, develop]
 
 permissions:
   contents: read
