@@ -29,48 +29,48 @@ module "gitflow" {
 
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| terraform | >= 1.0 |
-| github | ~> 6.0 |
+| Name      | Version |
+| --------- | ------- |
+| terraform | >= 1.0  |
+| github    | ~> 6.0  |
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| github | ~> 6.0 |
+| Name   | Version |
+| ------ | ------- |
+| github | ~> 6.0  |
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| github_branch.develop | resource |
-| github_branch_protection.develop | resource |
-| github_branch_protection.main | resource |
-| github_repository.repo | data source |
+| Name                             | Type        |
+| -------------------------------- | ----------- |
+| github_branch.develop            | resource    |
+| github_branch_protection.develop | resource    |
+| github_branch_protection.main    | resource    |
+| github_repository.repo           | data source |
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| repository_full_name | Full name of the repository (owner/repo-name) | `string` | n/a | yes |
-| main_branch_required_reviews | Number of required approving reviews for main branch | `number` | `1` | no |
-| develop_branch_required_reviews | Number of required approving reviews for develop branch | `number` | `1` | no |
-| main_branch_status_checks | List of status check contexts required for main branch | `list(string)` | `[]` | no |
-| develop_branch_status_checks | List of status check contexts required for develop branch | `list(string)` | `[]` | no |
-| require_code_owner_reviews | Require code owner reviews for main branch | `bool` | `false` | no |
-| require_signed_commits | Require signed commits for main branch | `bool` | `false` | no |
+| Name                            | Description                                               | Type           | Default | Required |
+| ------------------------------- | --------------------------------------------------------- | -------------- | ------- | :------: |
+| repository_full_name            | Full name of the repository (owner/repo-name)             | `string`       | n/a     |   yes    |
+| main_branch_required_reviews    | Number of required approving reviews for main branch      | `number`       | `1`     |    no    |
+| develop_branch_required_reviews | Number of required approving reviews for develop branch   | `number`       | `1`     |    no    |
+| main_branch_status_checks       | List of status check contexts required for main branch    | `list(string)` | `[]`    |    no    |
+| develop_branch_status_checks    | List of status check contexts required for develop branch | `list(string)` | `[]`    |    no    |
+| require_code_owner_reviews      | Require code owner reviews for main branch                | `bool`         | `false` |    no    |
+| require_signed_commits          | Require signed commits for main branch                    | `bool`         | `false` |    no    |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| repository_name | Name of the repository |
-| repository_full_name | Full name of the repository |
-| main_branch_protection_id | ID of the main branch protection rule |
+| Name                         | Description                              |
+| ---------------------------- | ---------------------------------------- |
+| repository_name              | Name of the repository                   |
+| repository_full_name         | Full name of the repository              |
+| main_branch_protection_id    | ID of the main branch protection rule    |
 | develop_branch_protection_id | ID of the develop branch protection rule |
-| develop_branch_created | Whether the develop branch was created |
-| branch_protection_summary | Summary of branch protection settings |
+| develop_branch_created       | Whether the develop branch was created   |
+| branch_protection_summary    | Summary of branch protection settings    |
 
 ## Branch Protection Rules
 
