@@ -106,9 +106,12 @@ module "gitflow_repository" {
   prod_env_reviewers  = ["ops-team", "security-team"]
 
   # Emergency bypass for critical incidents
+  # Note: actor_id must be the numeric team/user/app ID, not the name
+  # To find team ID: gh api orgs/YOUR-ORG/teams/TEAM-NAME --jq '.id'
+  # To find user ID: gh api users/USERNAME --jq '.id'
   bypass_actors = [
     {
-      actor_id    = "incident-response-team"
+      actor_id    = 12345678 # Replace with actual team ID
       actor_type  = "TEAM"
       bypass_mode = "pull_request"
     }
