@@ -195,9 +195,6 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
-      actions: read
-      metadata: read
-      repository-projects: read
     needs:
       - validate
       - examples
