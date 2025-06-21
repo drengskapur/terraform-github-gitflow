@@ -164,22 +164,22 @@ jobs:
           terraform_wrapper: false
 
       - name: Setup example variables
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        working-directory: examples/${{ matrix.example }}
         run: |
           if [ -f terraform.tfvars.example ]; then
             cp terraform.tfvars.example terraform.tfvars
           fi
 
       - name: Terraform Init
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        working-directory: examples/${{ matrix.example }}
         run: terraform init -backend=false
 
       - name: Terraform Format Check
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        working-directory: examples/${{ matrix.example }}
         run: terraform fmt -check -diff
 
       - name: Terraform Validate
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        working-directory: examples/${{ matrix.example }}
         run: terraform validate -no-color
 
   integration:
@@ -234,11 +234,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Init
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        working-directory: examples/${{ matrix.example }}
         run: terraform init -backend=false
 
       - name: Terraform Apply
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        working-directory: examples/${{ matrix.example }}
         run: |
           terraform apply -auto-approve \
             -var="github_owner=${{ github.repository_owner }}" \
@@ -256,8 +256,10 @@ jobs:
 
       - name: Terraform Destroy
         if: always()
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        working-directory: examples/${{ matrix.example }}
         run: |
+          # Ensure providers are available before destroy
+          terraform init -backend=false
           terraform destroy -auto-approve \
             -var="github_owner=${{ github.repository_owner }}" \
             -var="repository_name=${{ steps.repo.outputs.repo_name }}"

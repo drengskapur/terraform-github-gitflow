@@ -97,52 +97,53 @@ module "gitflow" {
 ### Basic Usage
 
 ```hcl
-module "branch_protection" {
-  source = "./modules/github-branch-protection"
+module "gitflow" {
+  source = "drengskapur/gitflow/github"
 
-  repository_full_name = "myorg/myrepo"
+  github_owner    = "myorg"
+  repository_name = "myrepo"
 }
 ```
 
 ### With CI/CD Integration
 
 ```hcl
-module "branch_protection" {
-  source = "./modules/github-branch-protection"
+module "gitflow" {
+  source = "drengskapur/gitflow/github"
 
-  repository_full_name             = "myorg/myrepo"
-  main_branch_required_reviews     = 2
-  main_branch_status_checks        = [
-    "ci/build",
-    "ci/test",
-    "ci/security-scan",
-    "ci/lint"
-  ]
-  develop_branch_status_checks     = [
-    "ci/build",
-    "ci/test"
-  ]
-  require_code_owner_reviews       = true
+  github_owner    = "myorg"
+  repository_name = "myrepo"
+
+  # Enhanced protection
+  enable_tag_protection = true
+  enable_push_rules     = true
+
+  # Environment protection
+  enable_prod_environment = true
+  prod_env_reviewers      = ["ops-team"]
 }
 ```
 
 ### High Security Setup
 
 ```hcl
-module "branch_protection" {
-  source = "./modules/github-branch-protection"
+module "gitflow" {
+  source = "drengskapur/gitflow/github"
 
-  repository_full_name             = "myorg/sensitive-repo"
-  main_branch_required_reviews     = 3
-  require_code_owner_reviews       = true
-  require_signed_commits           = true
-  main_branch_status_checks        = [
-    "ci/build",
-    "ci/test",
-    "ci/security-scan",
-    "ci/dependency-check",
-    "ci/sast",
-    "ci/dast"
-  ]
+  github_owner    = "myorg"
+  repository_name = "sensitive-repo"
+
+  # High security configuration
+  enable_advanced_security               = true
+  enable_secret_scanning                 = true
+  enable_secret_scanning_push_protection = true
+  enable_codeowners_file                 = true
+
+  # Enhanced protection
+  enable_tag_protection = true
+  enable_push_rules     = true
+
+  # Corporate compliance
+  commit_author_email_pattern = "@company\\.com$"
 }
 ```
