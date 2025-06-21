@@ -157,11 +157,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
       - name: Setup example variables
         working-directory: modules/github-gitflow/examples/${{ matrix.example }}
         run: |
@@ -170,36 +165,22 @@ jobs:
           fi
 
       - name: Terraform Init
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
-        run: terraform init -backend=false
+        run: |
+          cd modules/github-gitflow/examples/${{ matrix.example }}
+          docker run --rm -v "$PWD:/workspace" -w /workspace \
+            hashicorp/terraform:${{ env.TERRAFORM_VERSION }} \
+            init -backend=false
+        env:
+          TF_IN_AUTOMATION: true
 
       - name: Terraform Validate
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
-        run: terraform validate
-
-      - name: Terraform Plan
-        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
         run: |
-          echo "Running terraform plan with example values..."
-
-          # Try to run terraform plan - may fail due to GitHub API permissions in PR context
-          if terraform plan -input=false \
-            -var="github_owner=example-org" \
-            -var="repository_name=example-repo-${{ matrix.example }}" \
-            -var="trunk_repository_name=example-trunk-repo" 2>/dev/null; then
-            echo "✅ Terraform plan completed successfully"
-          else
-            echo "⚠️  Terraform plan failed (likely due to GitHub API permissions in PR context)"
-            echo "This is expected for PRs - full validation happens in integration tests"
-            echo ""
-            echo "✅ Terraform configuration syntax is valid (verified by terraform validate)"
-            echo "✅ Provider configuration is correct"
-            echo "✅ Module dependencies are resolved"
-            echo ""
-            echo "Note: Full terraform plan with real GitHub API access runs in integration tests on main/develop pushes"
-          fi
+          cd modules/github-gitflow/examples/${{ matrix.example }}
+          docker run --rm -v "$PWD:/workspace" -w /workspace \
+            hashicorp/terraform:${{ env.TERRAFORM_VERSION }} \
+            validate
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TF_IN_AUTOMATION: true
 
   integration:
     name: Integration Test (ephemeral repo)
