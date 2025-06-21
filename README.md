@@ -256,16 +256,48 @@ No modules.
 
 This module implements the standard GitFlow workflow:
 
-```
-main     ──●────●────●────●────●──
-            \    \    \    \    \
-develop   ──●────●────●────●────●──
-           /    /    /    /    /
-feature  ──●────●    /    /    /
-                    /    /    /
-release            ●────●    /
-                         /
-hotfix                  ●────●
+```mermaid
+gitGraph
+    commit id: "Initial"
+    branch develop
+    checkout develop
+    commit id: "Setup"
+
+    branch feature/user-auth
+    checkout feature/user-auth
+    commit id: "Add login"
+    commit id: "Add signup"
+    checkout develop
+    merge feature/user-auth
+    commit id: "Integrate auth"
+
+    branch release/v1.0
+    checkout release/v1.0
+    commit id: "Prepare v1.0"
+    commit id: "Fix bugs"
+    checkout main
+    merge release/v1.0
+    commit id: "Release v1.0" tag: "v1.0.0"
+
+    checkout develop
+    merge release/v1.0
+
+    branch feature/dashboard
+    checkout feature/dashboard
+    commit id: "Add dashboard"
+    checkout develop
+    merge feature/dashboard
+
+    checkout main
+    branch hotfix/security-fix
+    checkout hotfix/security-fix
+    commit id: "Security patch"
+    checkout main
+    merge hotfix/security-fix
+    commit id: "Hotfix v1.0.1" tag: "v1.0.1"
+
+    checkout develop
+    merge hotfix/security-fix
 ```
 
 ### Branch Types
