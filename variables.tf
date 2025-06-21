@@ -130,19 +130,19 @@ variable "repo_has_projects" {
 
 variable "enable_advanced_security" {
   type        = bool
-  description = "Enable GitHub Advanced Security features."
+  description = "Enable GitHub Advanced Security features (requires GitHub Enterprise)."
   default     = false
 }
 
 variable "enable_secret_scanning" {
   type        = bool
-  description = "Enable secret scanning."
+  description = "Enable secret scanning (requires GitHub Enterprise)."
   default     = false
 }
 
 variable "enable_secret_scanning_push_protection" {
   type        = bool
-  description = "Enable secret scanning push protection."
+  description = "Enable secret scanning push protection (requires GitHub Enterprise)."
   default     = false
 }
 
