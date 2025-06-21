@@ -131,19 +131,19 @@ variable "repo_has_projects" {
 variable "enable_advanced_security" {
   type        = bool
   description = "Enable GitHub Advanced Security features."
-  default     = true
+  default     = false
 }
 
 variable "enable_secret_scanning" {
   type        = bool
   description = "Enable secret scanning."
-  default     = true
+  default     = false
 }
 
 variable "enable_secret_scanning_push_protection" {
   type        = bool
   description = "Enable secret scanning push protection."
-  default     = true
+  default     = false
 }
 
 variable "enable_dependabot_security_updates" {

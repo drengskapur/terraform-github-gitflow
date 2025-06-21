@@ -237,7 +237,7 @@ No modules.
 | <a name="input_develop_branch_require_signed_commits"></a> [develop\_branch\_require\_signed\_commits](#input\_develop\_branch\_require\_signed\_commits) | Require signed commits on develop branch. | `bool` | `false` | no |
 | <a name="input_develop_branch_status_checks"></a> [develop\_branch\_status\_checks](#input\_develop\_branch\_status\_checks) | Required status checks for develop branch. | `list(string)` | `[]` | no |
 | <a name="input_dismiss_stale_reviews"></a> [dismiss\_stale\_reviews](#input\_dismiss\_stale\_reviews) | Dismiss stale reviews when new commits are pushed. | `bool` | `true` | no |
-| <a name="input_enable_advanced_security"></a> [enable\_advanced\_security](#input\_enable\_advanced\_security) | Enable GitHub Advanced Security features. | `bool` | `true` | no |
+| <a name="input_enable_advanced_security"></a> [enable\_advanced\_security](#input\_enable\_advanced\_security) | Enable GitHub Advanced Security features. | `bool` | `false` | no |
 | <a name="input_enable_codeowners_file"></a> [enable\_codeowners\_file](#input\_enable\_codeowners\_file) | Create and manage a CODEOWNERS file. | `bool` | `true` | no |
 | <a name="input_enable_dependabot_security_updates"></a> [enable\_dependabot\_security\_updates](#input\_enable\_dependabot\_security\_updates) | Enable Dependabot security updates. | `bool` | `true` | no |
 | <a name="input_enable_dev_environment"></a> [enable\_dev\_environment](#input\_enable\_dev\_environment) | Enable development environment. | `bool` | `true` | no |
@@ -248,8 +248,8 @@ No modules.
 | <a name="input_enable_prod_environment"></a> [enable\_prod\_environment](#input\_enable\_prod\_environment) | Enable production environment. | `bool` | `true` | no |
 | <a name="input_enable_push_rules"></a> [enable\_push\_rules](#input\_enable\_push\_rules) | Enable push rules to restrict file types and sizes. | `bool` | `true` | no |
 | <a name="input_enable_release_branches"></a> [enable\_release\_branches](#input\_enable\_release\_branches) | Enable release branch protection rules. | `bool` | `true` | no |
-| <a name="input_enable_secret_scanning"></a> [enable\_secret\_scanning](#input\_enable\_secret\_scanning) | Enable secret scanning. | `bool` | `true` | no |
-| <a name="input_enable_secret_scanning_push_protection"></a> [enable\_secret\_scanning\_push\_protection](#input\_enable\_secret\_scanning\_push\_protection) | Enable secret scanning push protection. | `bool` | `true` | no |
+| <a name="input_enable_secret_scanning"></a> [enable\_secret\_scanning](#input\_enable\_secret\_scanning) | Enable secret scanning. | `bool` | `false` | no |
+| <a name="input_enable_secret_scanning_push_protection"></a> [enable\_secret\_scanning\_push\_protection](#input\_enable\_secret\_scanning\_push\_protection) | Enable secret scanning push protection. | `bool` | `false` | no |
 | <a name="input_enable_stage_environment"></a> [enable\_stage\_environment](#input\_enable\_stage\_environment) | Enable staging environment. | `bool` | `true` | no |
 | <a name="input_enable_tag_protection"></a> [enable\_tag\_protection](#input\_enable\_tag\_protection) | Enable tag protection for release tags. | `bool` | `true` | no |
 | <a name="input_enable_webhook"></a> [enable\_webhook](#input\_enable\_webhook) | Enable GitFlow automation webhook. | `bool` | `false` | no |
