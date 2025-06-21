@@ -50,8 +50,10 @@ rule "terraform_deprecated_interpolation" {
 }
 
 # Check for unused declarations
+# Disabled for reusable modules - variables are part of the public API
+# and may not be used in examples but are intended for end users
 rule "terraform_unused_declarations" {
-  enabled = true
+  enabled = false
 }
 
 # Require terraform block with required_version
