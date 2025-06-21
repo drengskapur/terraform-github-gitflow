@@ -112,7 +112,7 @@ module "gitflow_repository" {
   bypass_actors = [
     {
       actor_id    = 12345678 # Replace with actual team ID
-      actor_type  = "TEAM"
+      actor_type  = "Team"
       bypass_mode = "pull_request"
     }
   ]

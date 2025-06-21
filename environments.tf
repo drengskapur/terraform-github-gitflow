@@ -43,15 +43,15 @@ resource "github_repository_environment" "this" {
     custom_branch_policies = !contains(each.value.branches, var.main_branch_name)
   }
 
-  dynamic "reviewers" {
-    for_each = length(each.value.reviewers) > 0 ? [1] : []
-    content {
-      # Note: GitHub API expects team IDs (numbers), not team names (strings)
-      # For now, we'll comment this out until team IDs are provided
-      # teams = [for r in each.value.reviewers : r if r != ""]
-      users = each.value.reviewers
-    }
-  }
+  # Note: GitHub API expects numeric user/team IDs, not usernames/team names
+  # Reviewers are commented out until proper ID lookup is implemented
+  # dynamic "reviewers" {
+  #   for_each = length(each.value.reviewers) > 0 ? [1] : []
+  #   content {
+  #     users = each.value.reviewers  # Requires numeric user IDs
+  #     teams = each.value.team_ids   # Requires numeric team IDs
+  #   }
+  # }
 }
 
 resource "github_repository_environment_deployment_policy" "branch_policy" {

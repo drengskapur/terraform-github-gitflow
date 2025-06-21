@@ -412,16 +412,16 @@ variable "bypass_actors" {
   description = "List of actors (users/teams/apps) allowed to bypass restrictions."
   type = list(object({
     actor_id    = number
-    actor_type  = string # USER, TEAM, INTEGRATION
+    actor_type  = string # RepositoryRole, Team, Integration, OrganizationAdmin
     bypass_mode = string # always, pull_request, push
   }))
   default = []
 
   validation {
     condition = alltrue([
-      for actor in var.bypass_actors : contains(["USER", "TEAM", "INTEGRATION"], actor.actor_type)
+      for actor in var.bypass_actors : contains(["RepositoryRole", "Team", "Integration", "OrganizationAdmin"], actor.actor_type)
     ])
-    error_message = "Actor type must be one of: USER, TEAM, INTEGRATION."
+    error_message = "Actor type must be one of: RepositoryRole, Team, Integration, OrganizationAdmin."
   }
 
   validation {
@@ -463,7 +463,7 @@ variable "enable_prod_environment" {
 
 variable "dev_env_reviewers" {
   type        = list(string)
-  description = "List of GitHub usernames who can review development deployments."
+  description = "List of GitHub usernames who can review development deployments. (Currently not implemented - GitHub API requires numeric user IDs)"
   default     = []
 
   validation {
@@ -481,7 +481,7 @@ variable "dev_env_reviewers" {
 
 variable "stage_env_reviewers" {
   type        = list(string)
-  description = "List of GitHub usernames who can review staging deployments."
+  description = "List of GitHub usernames who can review staging deployments. (Currently not implemented - GitHub API requires numeric user IDs)"
   default     = []
 
   validation {
@@ -499,7 +499,7 @@ variable "stage_env_reviewers" {
 
 variable "prod_env_reviewers" {
   type        = list(string)
-  description = "List of GitHub usernames who can review production deployments."
+  description = "List of GitHub usernames who can review production deployments. (Currently not implemented - GitHub API requires numeric user IDs)"
   default     = []
 
   validation {
