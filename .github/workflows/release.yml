@@ -8,6 +8,7 @@ name: Release
 permissions:
   contents: write
   actions: read
+  pull-requests: write
 
 concurrency:
   group: release-${{ github.ref }}
@@ -61,30 +62,38 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           if [ -f "CHANGELOG.md" ] && ! git diff --quiet CHANGELOG.md; then
+            # Create a new branch for the changelog update
+            BRANCH_NAME="changelog-update-${{ steps.version.outputs.version }}"
+
             # Stash the changelog changes
             git stash push -m "changelog-updates" CHANGELOG.md
 
-            # Checkout main branch (we're currently in detached HEAD from tag)
+            # Checkout main branch and create new branch for PR
             git checkout main
+            git checkout -b "$BRANCH_NAME"
 
             # Apply the stashed changelog changes
             git stash pop
             git add CHANGELOG.md
-            git commit -m "docs: update CHANGELOG.md for ${{ steps.version.outputs.version }} [skip ci]"
+            git commit -m "docs: update CHANGELOG.md for ${{ steps.version.outputs.version }}"
 
-            # Push to main branch
-            git push origin main
+            # Push the branch
+            git push origin "$BRANCH_NAME"
 
-            # Also push to develop branch if it exists
-            if git show-ref --verify --quiet refs/remotes/origin/develop; then
-              git checkout develop
-              git merge main --no-edit
-              git push origin develop
-              git checkout main
-            fi
+            # Create pull request using GitHub CLI
+            gh pr create \
+              --title "docs: Update CHANGELOG.md for ${{ steps.version.outputs.version }}" \
+              --body "Automated changelog update for release ${{ steps.version.outputs.version }}" \
+              --base main \
+              --head "$BRANCH_NAME"
+
+            # Auto-merge the PR (if possible)
+            gh pr merge "$BRANCH_NAME" --squash --delete-branch || echo "PR created but not auto-merged"
           else
             echo "No changes to CHANGELOG.md"
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.16.0
