@@ -47,9 +47,9 @@ module "gitflow_repository" {
   enable_release_branches = false # Disable for fresh repos - no release/* branches exist
   enable_hotfix_branches  = false # Disable for fresh repos - no hotfix/* branches exist
 
-  # Enhanced Protection Features
-  enable_tag_protection  = true
-  enable_push_rules      = true
+  # Enhanced Protection Features - disabled for GitHub Free plan in CI
+  enable_tag_protection  = false # Requires GitHub Pro
+  enable_push_rules      = false # Requires GitHub Pro
   enable_codeowners_file = true
 
   # Corporate compliance
@@ -88,10 +88,10 @@ module "gitflow_repository" {
     README.md @tech-writers
   EOT
 
-  # Environment configuration
-  enable_dev_environment   = true
-  enable_stage_environment = false # Disabled for CI on free plans
-  enable_prod_environment  = false # Disabled for CI on free plans
+  # Environment configuration - disabled for GitHub Free plan in CI
+  enable_dev_environment   = false # Requires GitHub Pro or different token permissions
+  enable_stage_environment = false # Requires GitHub Pro
+  enable_prod_environment  = false # Requires GitHub Pro
 
   dev_env_reviewers   = ["dev-leads"]
   stage_env_reviewers = ["qa-team", "dev-leads"]

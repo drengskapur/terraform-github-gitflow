@@ -37,19 +37,20 @@ module "gitflow" {
   # Basic GitFlow Configuration
   enable_gitflow = true
 
-  # Branch Configuration - disable rulesets for branches that don't exist in fresh repos
+  # Branch Configuration - disable rulesets for GitHub Free plan
   enable_develop_branch   = true
   enable_feature_branches = false # Disable for fresh repos - no feature/* branches exist
   enable_release_branches = false # Disable for fresh repos - no release/* branches exist
   enable_hotfix_branches  = false # Disable for fresh repos - no hotfix/* branches exist
 
-  # Disable tag protection for fresh repos (causes ruleset errors on personal accounts)
-  enable_tag_protection = false
+  # Disable features that require GitHub Pro
+  enable_tag_protection = false # Requires GitHub Pro
+  enable_push_rules     = false # Requires GitHub Pro
 
-  # Environment Configuration - disable problematic environments for fresh repos
-  enable_dev_environment   = true  # Keep dev as it's simpler
-  enable_stage_environment = false # Disable staging - causes billing plan errors
-  enable_prod_environment  = false # Disable production - causes billing plan errors
+  # Environment Configuration - disable environments for GitHub Free plan
+  enable_dev_environment   = false # Requires GitHub Pro or different token permissions
+  enable_stage_environment = false # Requires GitHub Pro
+  enable_prod_environment  = false # Requires GitHub Pro
 
   # Repository Settings
   repo_allow_merge_commit = true
