@@ -102,17 +102,8 @@ module "gitflow_repository" {
   stage_env_reviewers = ["qa-team", "dev-leads"]
   prod_env_reviewers  = ["ops-team", "security-team"]
 
-  # Emergency bypass for critical incidents
-  # Note: actor_id must be the numeric team/user/app ID, not the name
-  # To find team ID: gh api orgs/YOUR-ORG/teams/TEAM-NAME --jq '.id'
-  # To find user ID: gh api users/USERNAME --jq '.id'
-  bypass_actors = [
-    {
-      actor_id    = 12345678 # Replace with actual team ID
-      actor_type  = "Team"
-      bypass_mode = "pull_request"
-    }
-  ]
+  # CI compatibility: disable bypass actors (requires valid org IDs)
+  bypass_actors = []
 
   # Security features - Enable these if you have GitHub Enterprise or Advanced Security
   # For production use with GitHub Enterprise, set these to true:
@@ -134,53 +125,11 @@ module "gitflow_repository" {
   github_read_delay_ms  = 500
 }
 
-# Example of trunk-based development configuration
-module "trunk_based_repository" {
-  source = "../../"
-
-  github_owner    = var.github_owner
-  repository_name = var.trunk_repository_name
-
-  # Trunk-based development - disable GitFlow
-  enable_gitflow        = false
-  enable_develop_branch = false
-
-  # Repository settings
-  repo_has_wiki     = false
-  repo_has_projects = true
-
-  # Still want tag and push protection
-  enable_tag_protection = true
-  enable_push_rules     = true
-
-  # Only production environment for deployments
-  enable_prod_environment = false # Disabled for CI on free plans
-  prod_env_reviewers      = []
-
-  # Security features - Enable these if you have GitHub Enterprise or Advanced Security
-  # For production use with GitHub Enterprise, set these to true:
-  enable_advanced_security               = false # Set to true with GitHub Enterprise
-  enable_secret_scanning                 = false # Set to true with GitHub Enterprise
-  enable_secret_scanning_push_protection = false # Set to true with GitHub Enterprise
-  enable_dependabot_security_updates     = true  # Available on free accounts
-
-  # Allow UI management of topics for flexibility
-  manage_topics_in_terraform = false
-}
-
-# Outputs for both configurations
+# Trunk-based repository module and outputs have been removed for CI testing
 output "gitflow_repo_url" {
   value = module.gitflow_repository.repository_html_url
 }
 
-output "trunk_based_repo_url" {
-  value = module.trunk_based_repository.repository_html_url
-}
-
 output "gitflow_configuration" {
   value = module.gitflow_repository.gitflow_configuration
-}
-
-output "trunk_based_configuration" {
-  value = module.trunk_based_repository.gitflow_configuration
 }
