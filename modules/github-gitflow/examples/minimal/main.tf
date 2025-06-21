@@ -23,12 +23,6 @@ module "gitflow" {
   enable_push_rules      = true
   enable_codeowners_file = true
 
-  # Required workflows for CI/CD
-  required_workflows = [
-    ".github/workflows/ci.yml",
-    ".github/workflows/security.yml"
-  ]
-
   # Corporate email enforcement (optional)
   commit_author_email_pattern = "@your-company\\.com$"
 

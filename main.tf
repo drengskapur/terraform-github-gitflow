@@ -47,7 +47,7 @@ module "github_gitflow" {
 # Outputs from the module
 output "repository_url" {
   description = "The URL of the created repository"
-  value       = module.github_gitflow.repository_url
+  value       = module.github_gitflow.repository_html_url
 }
 
 output "repository_ssh_clone_url" {
@@ -56,6 +56,6 @@ output "repository_ssh_clone_url" {
 }
 
 output "default_branch" {
-  description = "The default branch of the repository"
-  value       = module.github_gitflow.default_branch
+  description = "The main branch name of the repository"
+  value       = module.github_gitflow.main_branch_name
 }

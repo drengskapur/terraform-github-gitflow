@@ -337,6 +337,12 @@ variable "manage_topics_in_terraform" {
   default     = false
 }
 
+variable "repository_topics" {
+  type        = list(string)
+  description = "Optional list of repository topics to manage when manage_topics_in_terraform is true."
+  default     = []
+}
+
 ###############################################################################
 # BRANCH OVERRIDES
 ###############################################################################

@@ -24,13 +24,6 @@ module "gitflow_repository" {
   enable_push_rules      = true
   enable_codeowners_file = true
 
-  # Required CI/CD workflows
-  required_workflows = [
-    ".github/workflows/ci.yml",
-    ".github/workflows/security.yml",
-    ".github/workflows/release.yml"
-  ]
-
   # Corporate compliance
   commit_author_email_pattern = "@acme-corp\\.com$"
 
@@ -76,22 +69,12 @@ module "gitflow_repository" {
   stage_env_reviewers = ["qa-team", "dev-leads"]
   prod_env_reviewers  = ["ops-team", "security-team"]
 
-  # Branch-specific overrides
-  main_branch_overrides = {
-    required_reviews = 3 # Extra strict for production
-  }
-
-  develop_branch_overrides = {
-    required_reviews = 2
-    status_checks    = ["ci", "security-scan", "integration-tests"]
-  }
-
   # Emergency bypass for critical incidents
   bypass_actors = [
     {
-      id   = "incident-response-team"
-      type = "TEAM"
-      mode = "pull_request"
+      actor_id    = "incident-response-team"
+      actor_type  = "TEAM"
+      bypass_mode = "pull_request"
     }
   ]
 
@@ -129,20 +112,9 @@ module "trunk_based_repository" {
   repo_has_wiki     = false
   repo_has_projects = true
 
-  # Only main branch protection
-  main_branch_overrides = {
-    required_reviews       = 1 # Lighter process for trunk-based
-    require_linear_history = false
-  }
-
   # Still want tag and push protection
   enable_tag_protection = true
   enable_push_rules     = true
-
-  # Required workflows for trunk-based CI/CD
-  required_workflows = [
-    ".github/workflows/ci.yml"
-  ]
 
   # Only production environment for deployments
   enable_prod_environment = true
