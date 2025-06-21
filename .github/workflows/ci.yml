@@ -157,6 +157,12 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
       - name: Setup example variables
         working-directory: modules/github-gitflow/examples/${{ matrix.example }}
         run: |
@@ -165,22 +171,16 @@ jobs:
           fi
 
       - name: Terraform Init
-        run: |
-          cd modules/github-gitflow/examples/${{ matrix.example }}
-          docker run --rm -v "$PWD:/workspace" -w /workspace \
-            hashicorp/terraform:${{ env.TERRAFORM_VERSION }} \
-            init -backend=false
-        env:
-          TF_IN_AUTOMATION: true
+        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        run: terraform init -backend=false
+
+      - name: Terraform Format Check
+        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        run: terraform fmt -check -diff
 
       - name: Terraform Validate
-        run: |
-          cd modules/github-gitflow/examples/${{ matrix.example }}
-          docker run --rm -v "$PWD:/workspace" -w /workspace \
-            hashicorp/terraform:${{ env.TERRAFORM_VERSION }} \
-            validate
-        env:
-          TF_IN_AUTOMATION: true
+        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        run: terraform validate -no-color
 
   integration:
     name: Integration Test (ephemeral repo)
