@@ -68,9 +68,4 @@ module "gitflow" {
   develop_branch_require_signed_commits = false
 
   # Commit Requirements
-  conventional_commit_regex   = "^(feat|fix|docs|style|refactor|perf|test|chore)(\\(.+\\))?: .+$"
-  commit_author_email_pattern = "@your-company\\.com$"
-
-  # Webhook Configuration
-  enable_webhook = false
 }

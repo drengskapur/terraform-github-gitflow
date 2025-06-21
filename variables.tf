@@ -297,7 +297,7 @@ variable "require_last_push_approval" {
 variable "conventional_commit_regex" {
   type        = string
   description = "Regex pattern for conventional commit messages."
-  default     = "^(feat|fix|docs|style|refactor|perf|test|chore)(\\(.+\\))?: .+$"
+  default     = ""
 }
 
 variable "commit_author_email_pattern" {

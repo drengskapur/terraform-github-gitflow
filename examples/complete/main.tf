@@ -61,7 +61,7 @@ module "gitflow_repository" {
   enable_codeowners_file = true
 
   # Corporate compliance
-  commit_author_email_pattern = "@acme-corp\\.com$"
+  commit_author_email_pattern = ""
 
   # File restrictions for security
   max_file_size_mb        = 10

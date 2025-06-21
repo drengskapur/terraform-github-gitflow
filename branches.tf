@@ -126,10 +126,13 @@ resource "github_repository_ruleset" "branches" {
       }
     }
 
-    commit_message_pattern {
-      name     = "Conventional commits"
-      operator = "regex"
-      pattern  = var.conventional_commit_regex
+    dynamic "commit_message_pattern" {
+      for_each = var.conventional_commit_regex != "" ? [1] : []
+      content {
+        name     = "Conventional commits"
+        operator = "regex"
+        pattern  = var.conventional_commit_regex
+      }
     }
 
     # Commit author email pattern (if specified)
