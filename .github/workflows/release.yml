@@ -1,44 +1,28 @@
 name: Release
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    tags:
+      - 'v*.*.*'
 permissions:
   contents: write
-  pull-requests: write
-  issues: write
 jobs:
   release:
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Generate Changelog
+        id: changelog
+        uses: conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-version-file: true
+          skip-commit: true
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ steps.changelog.outputs.clean_changelog }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install semantic-release
-        run: |
-          npm install -g semantic-release \
-            @semantic-release/changelog \
-            @semantic-release/git \
-            @semantic-release/github \
-            @semantic-release/exec \
-            conventional-changelog-conventionalcommits
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.9.0
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
-      - name: Terraform Validate
-        run: |
-          terraform init -backend=false
-          terraform validate
-      - name: Run semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release

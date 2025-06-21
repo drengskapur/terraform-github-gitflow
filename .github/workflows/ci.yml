@@ -1,12 +1,18 @@
 name: CI
 on:
-  push:
-    branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  push:
+    branches: [main, develop]
+env:
+  TERRAFORM_VERSION: "1.9.0"
+  TFLINT_VERSION: "v0.53.0"
+  TERRAFORM_DOCS_VERSION: "v0.18.0"
+  TFSEC_VERSION: "v1.28.5"
+  CHECKOV_VERSION: "3.2.255"
 jobs:
   validate:
-    name: Validate Terraform
+    name: Validate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,48 +20,106 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.9.0
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
       - name: Terraform Format Check
+        id: fmt
         run: terraform fmt -check -recursive
       - name: Terraform Init
+        id: init
         run: terraform init -backend=false
       - name: Terraform Validate
+        id: validate
         run: terraform validate
-      - name: Validate Examples
-        run: |
-          cd examples/minimal
-          terraform init -backend=false
-          terraform validate
-  security:
-    name: Security Scan
+  tflint:
+    name: TFLint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run Trivy vulnerability scanner
+      - name: Cache TFLint plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.tflint.d/plugins
+          key: tflint-${{ runner.os }}-${{ hashFiles('.tflint.hcl') }}
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: ${{ env.TFLINT_VERSION }}
+      - name: Init TFLint
+        run: tflint --init
+      - name: Run TFLint
+        run: tflint --format=compact
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run Trivy (tfsec replacement)
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'config'
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
-      - name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+      - name: Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+      - name: Upload Checkov results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-results.sarif
   docs:
     name: Documentation
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Render terraform docs
         uses: terraform-docs/gh-actions@v1.2.0
         with:
           working-dir: .
           output-file: README.md
           output-method: inject
-          git-push: false
-      - name: Check if documentation is up to date
-        run: "if git diff --exit-code README.md; then\n  echo \"Documentation is up to date\"\nelse\n  echo \"Documentation is out of date. Please run 'terraform-docs markdown . --output-file README.md'\"\n  exit 1\nfi "
+          git-push: "true"
+          git-push-user-name: "terraform-docs[bot]"
+          git-push-user-email: "terraform-docs[bot]@users.noreply.github.com"
+          git-commit-message: "docs: update README.md with terraform-docs"
+  examples:
+    name: Test Examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [minimal, complete]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      - name: Terraform Init
+        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        run: terraform init -backend=false
+      - name: Terraform Validate
+        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        run: terraform validate
+      - name: Terraform Plan
+        working-directory: modules/github-gitflow/examples/${{ matrix.example }}
+        run: terraform plan -input=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

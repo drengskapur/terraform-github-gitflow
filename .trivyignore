@@ -1,0 +1,8 @@
+# Trivy ignore file for security scanning exceptions
+# Add specific CVE IDs or security check IDs to ignore them
+# Example:
+# CVE-2021-12345
+# DS002
+
+# Ignore low severity findings for development
+# AVD-DS-0001 
