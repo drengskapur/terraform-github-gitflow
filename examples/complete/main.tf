@@ -117,11 +117,12 @@ module "gitflow_repository" {
     }
   ]
 
-  # Security features - full suite
-  enable_advanced_security               = true
-  enable_secret_scanning                 = true
-  enable_secret_scanning_push_protection = true
-  enable_dependabot_security_updates     = true
+  # Security features - Enable these if you have GitHub Enterprise or Advanced Security
+  # For production use with GitHub Enterprise, set these to true:
+  enable_advanced_security               = false # Set to true with GitHub Enterprise
+  enable_secret_scanning                 = false # Set to true with GitHub Enterprise
+  enable_secret_scanning_push_protection = false # Set to true with GitHub Enterprise
+  enable_dependabot_security_updates     = true  # Available on free accounts
 
   # Webhook for external integrations
   enable_webhook = true
@@ -159,11 +160,12 @@ module "trunk_based_repository" {
   enable_prod_environment = true
   prod_env_reviewers      = ["ops-team"]
 
-  # Security features
-  enable_advanced_security               = true
-  enable_secret_scanning                 = true
-  enable_secret_scanning_push_protection = true
-  enable_dependabot_security_updates     = true
+  # Security features - Enable these if you have GitHub Enterprise or Advanced Security
+  # For production use with GitHub Enterprise, set these to true:
+  enable_advanced_security               = false # Set to true with GitHub Enterprise
+  enable_secret_scanning                 = false # Set to true with GitHub Enterprise
+  enable_secret_scanning_push_protection = false # Set to true with GitHub Enterprise
+  enable_dependabot_security_updates     = true  # Available on free accounts
 
   # Allow UI management of topics for flexibility
   manage_topics_in_terraform = false

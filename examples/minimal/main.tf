@@ -73,11 +73,11 @@ module "gitflow" {
     /.github/ @devops-team
   EOT
 
-  # Security features
-  enable_advanced_security               = true
-  enable_secret_scanning                 = true
-  enable_secret_scanning_push_protection = true
-  enable_dependabot_security_updates     = true
+  # Security features (disabled for CI compatibility with free GitHub accounts)
+  enable_advanced_security               = false
+  enable_secret_scanning                 = false
+  enable_secret_scanning_push_protection = false
+  enable_dependabot_security_updates     = true # This works on free accounts
 
   # Topics management
   manage_topics_in_terraform = true
