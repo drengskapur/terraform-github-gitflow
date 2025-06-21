@@ -1,2 +1,2 @@
-github_owner    = "example-org"
+github_owner    = "terraform-gitflow-tests"
 repository_name = "example-minimal-repo"
