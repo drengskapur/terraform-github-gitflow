@@ -10,7 +10,8 @@ terraform {
 
 # Configure the GitHub Provider
 provider "github" {
-  # Configuration will be taken from environment variables:
+  owner = var.github_owner
+  # Token configuration will be taken from environment variables:
   # GITHUB_TOKEN or GITHUB_APP_*
 }
 
