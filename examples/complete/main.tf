@@ -26,12 +26,6 @@ variable "repository_name" {
   default     = "gitflow-repo"
 }
 
-variable "trunk_repository_name" {
-  description = "Name of the trunk-based repository to create"
-  type        = string
-  default     = "trunk-based-repo"
-}
-
 module "gitflow_repository" {
   source = "../../"
 

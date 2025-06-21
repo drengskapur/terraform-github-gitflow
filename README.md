@@ -253,7 +253,7 @@ No modules.
 | <a name="input_enable_dev_environment"></a> [enable\_dev\_environment](#input\_enable\_dev\_environment) | Enable development environment. | `bool` | `true` | no |
 | <a name="input_enable_develop_branch"></a> [enable\_develop\_branch](#input\_enable\_develop\_branch) | Create and manage the develop branch (automatically enabled when enable\_gitflow is true). | `bool` | `true` | no |
 | <a name="input_enable_feature_branches"></a> [enable\_feature\_branches](#input\_enable\_feature\_branches) | Enable feature branch protection rules. | `bool` | `true` | no |
-| <a name="input_enable_gitflow"></a> [enable\_gitflow](#input\_enable\_gitflow) | Enable full GitFlow workflow (develop/release/hotfix branches). Set to false for trunk-based development. | `bool` | `true` | no |
+| <a name="input_enable_gitflow"></a> [enable\_gitflow](#input\_enable\_gitflow) | Enable GitFlow workflow (develop / feature / release / hotfix branches). Leave true unless you purposely disable GitFlow rules. | `bool` | `true` | no |
 | <a name="input_enable_hotfix_branches"></a> [enable\_hotfix\_branches](#input\_enable\_hotfix\_branches) | Enable hotfix branch protection rules. | `bool` | `true` | no |
 | <a name="input_enable_prod_environment"></a> [enable\_prod\_environment](#input\_enable\_prod\_environment) | Enable production environment. | `bool` | `true` | no |
 | <a name="input_enable_push_rules"></a> [enable\_push\_rules](#input\_enable\_push\_rules) | Enable push rules to restrict file types and sizes. | `bool` | `true` | no |
