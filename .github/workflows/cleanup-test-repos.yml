@@ -1,0 +1,120 @@
+name: Cleanup Test Repositories
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    name: Clean up temporary test repositories
+    runs-on: ubuntu-24.04
+    if: github.repository_owner == 'jonathanagustin'
+    steps:
+      - name: Cleanup leftover test repositories
+        run: |
+          echo "🧹 Starting cleanup of temporary test repositories..."
+
+          # Function to safely delete repositories with comprehensive safety checks
+          cleanup_temp_repos() {
+            local org="terraform-gitflow-tests"
+            local current_time=$(date +%s)
+            local max_age_hours=24 # Delete repos older than 24 hours
+            local max_age_seconds=$((max_age_hours * 3600))
+
+            echo "Searching for temporary repositories in organization: $org"
+
+            # Get list of repositories matching our patterns
+            local repos=$(gh repo list "$org" --limit 200 --json name,createdAt,visibility | \
+              jq -r '.[] | select(.name | test("^(temp-ci-|tmp-gitflow-test-)")) | "\(.name)|\(.createdAt)|\(.visibility)"')
+
+            if [ -z "$repos" ]; then
+              echo "✅ No temporary repositories found - nothing to clean up"
+              return 0
+            fi
+
+            echo "Found temporary repositories:"
+            echo "$repos" | while IFS='|' read -r repo_name created_at visibility; do
+              echo "  - $repo_name (created: $created_at, visibility: $visibility)"
+            done
+            echo ""
+
+            local deleted_count=0
+            local skipped_count=0
+
+            echo "$repos" | while IFS='|' read -r repo_name created_at visibility; do
+              local repo_full_name="$org/$repo_name"
+
+              echo "🔍 Evaluating: $repo_name"
+
+              # Safety check 1: Repository name must match expected patterns
+              if [[ ! "$repo_name" =~ ^temp-ci- ]] && [[ ! "$repo_name" =~ ^tmp-gitflow-test- ]]; then
+                echo "  ⚠️  SAFETY CHECK FAILED: Repository '$repo_name' does not match expected patterns"
+                skipped_count=$((skipped_count + 1))
+                continue
+              fi
+
+              # Safety check 2: Repository must be private
+              if [[ "$visibility" != "PRIVATE" ]]; then
+                echo "  ⚠️  SAFETY CHECK FAILED: Repository '$repo_name' is not private (visibility: $visibility)"
+                skipped_count=$((skipped_count + 1))
+                continue
+              fi
+
+              # Safety check 3: Check repository age
+              local created_timestamp=$(date -d "$created_at" +%s 2>/dev/null || echo "0")
+              local age_seconds=$((current_time - created_timestamp))
+              local age_hours=$((age_seconds / 3600))
+
+              if [[ $age_seconds -lt $max_age_seconds ]]; then
+                echo "  ⏳ Repository '$repo_name' is only ${age_hours}h old (< ${max_age_hours}h) - skipping"
+                skipped_count=$((skipped_count + 1))
+                continue
+              fi
+
+              # Safety check 4: Verify repository still exists and get fresh metadata
+              local fresh_visibility=$(gh repo view "$repo_full_name" --json visibility --jq '.visibility' 2>/dev/null || echo "NOT_FOUND")
+              if [[ "$fresh_visibility" == "NOT_FOUND" ]]; then
+                echo "  ℹ️  Repository '$repo_name' no longer exists - skipping"
+                continue
+              fi
+
+              if [[ "$fresh_visibility" != "PRIVATE" ]]; then
+                echo "  ⚠️  SAFETY CHECK FAILED: Repository '$repo_name' visibility changed to $fresh_visibility"
+                skipped_count=$((skipped_count + 1))
+                continue
+              fi
+
+              echo "  ✅ All safety checks passed for '$repo_name' (age: ${age_hours}h)"
+              echo "  🗑️  Deleting: $repo_full_name"
+
+              # Attempt to delete the repository
+              if gh repo delete "$repo_full_name" --yes 2>/dev/null; then
+                echo "  ✅ Successfully deleted: $repo_full_name"
+                deleted_count=$((deleted_count + 1))
+              else
+                echo "  ❌ Failed to delete: $repo_full_name"
+                skipped_count=$((skipped_count + 1))
+              fi
+              echo ""
+            done
+
+            echo "🏁 Cleanup completed!"
+            echo "   📊 Deleted: $deleted_count repositories"
+            echo "   ⏭️  Skipped: $skipped_count repositories"
+          }
+
+          cleanup_temp_repos
+        env:
+          GH_TOKEN: ${{ secrets.INTEGRATION_TOKEN }}
+
+      - name: Report cleanup results
+        if: always()
+        run: |
+          echo "🎯 Cleanup job completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "💡 This job runs every 6 hours to clean up test repositories older than 24 hours"
+          echo "🔧 You can also run this manually using workflow_dispatch"
