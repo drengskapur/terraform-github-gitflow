@@ -1,76 +1,37 @@
 # Terraform GitHub GitFlow Module
 
-A Terraform module for setting up GitFlow branching strategy with idiomatic branch protection rules on GitHub repositories.
+A comprehensive Terraform module for implementing GitFlow branching strategy with modern GitHub repository management features including branch protection, environments, security scanning, and compliance controls.
 
 ## Features
 
-- ✅ **GitFlow branching strategy** setup (main + develop branches)
-- ✅ **Idiomatic branch protection** with modern best practices
-- ✅ **Automatic develop branch creation**
-- ✅ **Customizable review requirements**
-- ✅ **Configurable CI/CD status checks**
-- ✅ **Production-ready defaults**
+- ✅ **Complete GitFlow workflow** (main/develop/feature/release/hotfix branches)
+- ✅ **Modern branch protection** with repository rulesets
+- ✅ **GitHub Environments** for deployment workflows
+- ✅ **Security features** (Advanced Security, secret scanning, Dependabot)
+- ✅ **Compliance controls** (CODEOWNERS, signed commits, conventional commits)
+- ✅ **Webhook integration** for external automation
+- ✅ **Production-ready defaults** with extensive customization options
 
-## Usage
+## Quick Start
 
 ```hcl
-module "gitflow" {
-  source = "drengskapur/gitflow/github"
+module "gitflow_repository" {
+  source = "drengskapur/terraform-github-gitflow/github"
 
-  repository_full_name             = "owner/repo-name"
-  main_branch_required_reviews     = 2
-  develop_branch_required_reviews  = 1
-  main_branch_status_checks        = ["ci/build", "ci/test"]
-  develop_branch_status_checks     = ["ci/build"]
-  require_code_owner_reviews       = true
-  require_signed_commits           = false
+  github_owner    = "your-org"
+  repository_name = "your-repo"
+
+  # Enable full GitFlow workflow
+  enable_gitflow = true
+
+  # Security features
+  enable_advanced_security = true
+  enable_secret_scanning   = true
 }
 ```
 
-## Requirements
-
-| Name      | Version |
-| --------- | ------- |
-| terraform | >= 1.0  |
-| github    | ~> 6.0  |
-
-## Providers
-
-| Name   | Version |
-| ------ | ------- |
-| github | ~> 6.0  |
-
-## Resources
-
-| Name                             | Type        |
-| -------------------------------- | ----------- |
-| github_branch.develop            | resource    |
-| github_branch_protection.develop | resource    |
-| github_branch_protection.main    | resource    |
-| github_repository.repo           | data source |
-
-## Inputs
-
-| Name                            | Description                                               | Type           | Default | Required |
-| ------------------------------- | --------------------------------------------------------- | -------------- | ------- | :------: |
-| repository_full_name            | Full name of the repository (owner/repo-name)             | `string`       | n/a     |   yes    |
-| main_branch_required_reviews    | Number of required approving reviews for main branch      | `number`       | `1`     |    no    |
-| develop_branch_required_reviews | Number of required approving reviews for develop branch   | `number`       | `1`     |    no    |
-| main_branch_status_checks       | List of status check contexts required for main branch    | `list(string)` | `[]`    |    no    |
-| develop_branch_status_checks    | List of status check contexts required for develop branch | `list(string)` | `[]`    |    no    |
-| require_code_owner_reviews      | Require code owner reviews for main branch                | `bool`         | `false` |    no    |
-| require_signed_commits          | Require signed commits for main branch                    | `bool`         | `false` |    no    |
-
-## Outputs
-
-| Name                         | Description                              |
-| ---------------------------- | ---------------------------------------- |
-| repository_name              | Name of the repository                   |
-| repository_full_name         | Full name of the repository              |
-| main_branch_protection_id    | ID of the main branch protection rule    |
-| develop_branch_protection_id | ID of the develop branch protection rule |
-| develop_branch_created       | Whether the develop branch was created   |
-| branch_protection_summary    | Summary of branch protection settings    |
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->
 
 ## Branch Protection Rules
 
@@ -94,56 +55,67 @@ module "gitflow" {
 
 ## Examples
 
-### Basic Usage
+### Basic GitFlow Setup
 
 ```hcl
-module "gitflow" {
-  source = "drengskapur/gitflow/github"
+module "gitflow_repository" {
+  source = "drengskapur/terraform-github-gitflow/github"
 
-  github_owner    = "myorg"
-  repository_name = "myrepo"
+  github_owner    = "your-org"
+  repository_name = "basic-repo"
+
+  # Enable GitFlow workflow
+  enable_gitflow = true
 }
 ```
 
-### With CI/CD Integration
+### Complete Enterprise Setup
 
 ```hcl
-module "gitflow" {
-  source = "drengskapur/gitflow/github"
+module "gitflow_repository" {
+  source = "drengskapur/terraform-github-gitflow/github"
 
-  github_owner    = "myorg"
-  repository_name = "myrepo"
+  github_owner    = "your-org"
+  repository_name = "enterprise-repo"
 
-  # Enhanced protection
-  enable_tag_protection = true
-  enable_push_rules     = true
+  # Full GitFlow with all environments
+  enable_gitflow           = true
+  enable_dev_environment   = true
+  enable_stage_environment = true
+  enable_prod_environment  = true
 
-  # Environment protection
-  enable_prod_environment = true
-  prod_env_reviewers      = ["ops-team"]
-}
-```
-
-### High Security Setup
-
-```hcl
-module "gitflow" {
-  source = "drengskapur/gitflow/github"
-
-  github_owner    = "myorg"
-  repository_name = "sensitive-repo"
-
-  # High security configuration
+  # Security features
   enable_advanced_security               = true
   enable_secret_scanning                 = true
   enable_secret_scanning_push_protection = true
-  enable_codeowners_file                 = true
+  enable_dependabot_security_updates     = true
+
+  # Compliance controls
+  enable_codeowners_file      = true
+  commit_author_email_pattern = "@company\\.com$"
 
   # Enhanced protection
   enable_tag_protection = true
   enable_push_rules     = true
-
-  # Corporate compliance
-  commit_author_email_pattern = "@company\\.com$"
 }
 ```
+
+### Trunk-Based Development
+
+```hcl
+module "trunk_repository" {
+  source = "drengskapur/terraform-github-gitflow/github"
+
+  github_owner    = "your-org"
+  repository_name = "trunk-repo"
+
+  # Disable GitFlow for trunk-based development
+  enable_gitflow        = false
+  enable_develop_branch = false
+
+  # Only production environment
+  enable_prod_environment = true
+}
+```
+
+For more examples, see the [examples](./examples/) directory.

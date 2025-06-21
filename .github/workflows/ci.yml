@@ -146,6 +146,8 @@ jobs:
           git-push-user-name: "terraform-docs[bot]"
           git-push-user-email: "terraform-docs[bot]@users.noreply.github.com"
           git-commit-message: "docs: update README.md with terraform-docs"
+          find-dir: "."
+          recursive: "false"
 
   examples:
     name: Test Examples
