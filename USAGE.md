@@ -30,8 +30,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_blocked_file_extensions"></a> [blocked\_file\_extensions](#input\_blocked\_file\_extensions) | File extensions to block in push rules. | `list(string)` | <pre>[<br>  "exe",<br>  "zip",<br>  "tar.gz",<br>  "dmg",<br>  "pkg",<br>  "deb",<br>  "rpm"<br>]</pre> | no |
-| <a name="input_bypass_actors"></a> [bypass\_actors](#input\_bypass\_actors) | List of actors (users/teams/apps) allowed to bypass restrictions. | <pre>list(object({<br>    actor_id    = number<br>    actor_type  = string # RepositoryRole, Team, Integration, OrganizationAdmin<br>    bypass_mode = string # always, pull_request, push<br>  }))</pre> | `[]` | no |
+| <a name="input_blocked_file_extensions"></a> [blocked\_file\_extensions](#input\_blocked\_file\_extensions) | File extensions to block in push rules. | `list(string)` | <pre>[<br/>  "exe",<br/>  "zip",<br/>  "tar.gz",<br/>  "dmg",<br/>  "pkg",<br/>  "deb",<br/>  "rpm"<br/>]</pre> | no |
+| <a name="input_bypass_actors"></a> [bypass\_actors](#input\_bypass\_actors) | List of actors (users/teams/apps) allowed to bypass restrictions. | <pre>list(object({<br/>    actor_id    = number<br/>    actor_type  = string # RepositoryRole, Team, Integration, OrganizationAdmin<br/>    bypass_mode = string # always, pull_request, push<br/>  }))</pre> | `[]` | no |
 | <a name="input_codeowners_content"></a> [codeowners\_content](#input\_codeowners\_content) | Content for the CODEOWNERS file. | `string` | `"# Global code owners\n* @admins\n"` | no |
 | <a name="input_commit_author_email_pattern"></a> [commit\_author\_email\_pattern](#input\_commit\_author\_email\_pattern) | Regex pattern for commit author email addresses (e.g., '@your-org.com$'). | `string` | `""` | no |
 | <a name="input_conventional_commit_regex"></a> [conventional\_commit\_regex](#input\_conventional\_commit\_regex) | Regex pattern for conventional commit messages. | `string` | `""` | no |
@@ -89,12 +89,12 @@ No modules.
 | <a name="input_repository_visibility"></a> [repository\_visibility](#input\_repository\_visibility) | Repository visibility: public, private, or internal. | `string` | `"private"` | no |
 | <a name="input_require_code_owner_reviews"></a> [require\_code\_owner\_reviews](#input\_require\_code\_owner\_reviews) | Require code owner reviews. | `bool` | `false` | no |
 | <a name="input_require_last_push_approval"></a> [require\_last\_push\_approval](#input\_require\_last\_push\_approval) | Require approval from someone other than the last pusher. | `bool` | `false` | no |
-| <a name="input_required_workflows"></a> [required\_workflows](#input\_required\_workflows) | List of required GitHub Actions workflows that must pass. | <pre>list(object({<br>    path       = string<br>    repository = string<br>    ref        = optional(string, "main")<br>  }))</pre> | `[]` | no |
+| <a name="input_required_workflows"></a> [required\_workflows](#input\_required\_workflows) | List of required GitHub Actions workflows that must pass. | <pre>list(object({<br/>    path       = string<br/>    repository = string<br/>    ref        = optional(string, "main")<br/>  }))</pre> | `[]` | no |
 | <a name="input_restricted_file_extensions"></a> [restricted\_file\_extensions](#input\_restricted\_file\_extensions) | File extensions to restrict in push rules. | `list(string)` | `[]` | no |
 | <a name="input_restricted_file_paths"></a> [restricted\_file\_paths](#input\_restricted\_file\_paths) | File paths to restrict in push rules (using fnmatch patterns). | `list(string)` | `[]` | no |
 | <a name="input_set_develop_as_default"></a> [set\_develop\_as\_default](#input\_set\_develop\_as\_default) | Set develop branch as the default branch (not recommended for GitFlow). | `bool` | `false` | no |
 | <a name="input_stage_env_reviewers"></a> [stage\_env\_reviewers](#input\_stage\_env\_reviewers) | List of GitHub usernames who can review staging deployments. (Currently not implemented - GitHub API requires numeric user IDs) | `list(string)` | `[]` | no |
-| <a name="input_webhook_events"></a> [webhook\_events](#input\_webhook\_events) | List of events to trigger webhook. | `list(string)` | <pre>[<br>  "push",<br>  "pull_request",<br>  "release"<br>]</pre> | no |
+| <a name="input_webhook_events"></a> [webhook\_events](#input\_webhook\_events) | List of events to trigger webhook. | `list(string)` | <pre>[<br/>  "push",<br/>  "pull_request",<br/>  "release"<br/>]</pre> | no |
 | <a name="input_webhook_insecure_ssl"></a> [webhook\_insecure\_ssl](#input\_webhook\_insecure\_ssl) | Allow insecure SSL for webhook. | `bool` | `false` | no |
 | <a name="input_webhook_secret"></a> [webhook\_secret](#input\_webhook\_secret) | Webhook secret for GitFlow automation. | `string` | `""` | no |
 | <a name="input_webhook_url"></a> [webhook\_url](#input\_webhook\_url) | Webhook URL for GitFlow automation. | `string` | `""` | no |
