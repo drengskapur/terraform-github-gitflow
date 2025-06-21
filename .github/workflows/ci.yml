@@ -154,7 +154,9 @@ jobs:
       contents: read
     strategy:
       matrix:
-        example: [minimal, complete]
+        example:
+          - minimal
+          - complete
     steps:
       - name: Checkout
         uses: actions/checkout@v4

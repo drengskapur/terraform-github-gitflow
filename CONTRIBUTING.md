@@ -141,7 +141,7 @@ People *love* thorough bug reports. I'm not even kidding.
    cd modules/github-gitflow
    terraform validate
    cd ../..
-   
+
    # Validate the root example
    terraform validate
    ```
@@ -160,13 +160,13 @@ People *love* thorough bug reports. I'm not even kidding.
    terraform init
    terraform plan
    cd ../../../..
-   
+
    # Test complete example
    cd modules/github-gitflow/examples/complete
    terraform init
    terraform plan
    cd ../../../..
-   
+
    # Test root-level example
    terraform init
    terraform plan
@@ -262,7 +262,7 @@ variable "example_variable" {
   description = "A clear description of what this variable does"
   type        = string
   default     = "default_value"
-  
+
   validation {
     condition     = can(regex("^[a-z]+$", var.example_variable))
     error_message = "The example_variable must contain only lowercase letters."
