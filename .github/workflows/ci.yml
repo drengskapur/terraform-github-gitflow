@@ -172,7 +172,11 @@ jobs:
 
       - name: Terraform Plan
         working-directory: modules/github-gitflow/examples/${{ matrix.example }}
-        run: terraform plan -input=false
+        run: |
+          terraform plan -input=false \
+            -var="github_owner=example-org" \
+            -var="repository_name=example-repo-${{ matrix.example }}" \
+            -var="trunk_repository_name=example-trunk-repo"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

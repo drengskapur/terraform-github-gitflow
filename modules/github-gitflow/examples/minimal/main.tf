@@ -1,8 +1,35 @@
+terraform {
+  required_providers {
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
+  }
+}
+
+# Configure the GitHub Provider
+provider "github" {
+  # Configuration will be taken from environment variables:
+  # GITHUB_TOKEN or GITHUB_APP_*
+}
+
+variable "github_owner" {
+  description = "GitHub organization or user name"
+  type        = string
+  default     = "your-github-org"
+}
+
+variable "repository_name" {
+  description = "Name of the repository to create"
+  type        = string
+  default     = "your-repo-name"
+}
+
 module "gitflow" {
   source = "../../"
 
-  github_owner    = "your-github-org"
-  repository_name = "your-repo-name"
+  github_owner    = var.github_owner
+  repository_name = var.repository_name
 
   # GitFlow Configuration
   enable_gitflow         = true # Set to false for trunk-based development

@@ -1,9 +1,43 @@
 # Complete example demonstrating advanced GitFlow features
+
+terraform {
+  required_providers {
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
+  }
+}
+
+# Configure the GitHub Provider
+provider "github" {
+  # Configuration will be taken from environment variables:
+  # GITHUB_TOKEN or GITHUB_APP_*
+}
+
+variable "github_owner" {
+  description = "GitHub organization or user name"
+  type        = string
+  default     = "your-github-org"
+}
+
+variable "repository_name" {
+  description = "Name of the repository to create"
+  type        = string
+  default     = "gitflow-repo"
+}
+
+variable "trunk_repository_name" {
+  description = "Name of the trunk-based repository to create"
+  type        = string
+  default     = "trunk-based-repo"
+}
+
 module "gitflow_repository" {
   source = "../../"
 
-  github_owner    = "your-github-org"
-  repository_name = "gitflow-repo"
+  github_owner    = var.github_owner
+  repository_name = var.repository_name
 
   # Full GitFlow Configuration
   enable_gitflow         = true
@@ -101,8 +135,8 @@ module "gitflow_repository" {
 module "trunk_based_repository" {
   source = "../../"
 
-  github_owner    = "your-github-org"
-  repository_name = "trunk-based-repo"
+  github_owner    = var.github_owner
+  repository_name = var.trunk_repository_name
 
   # Trunk-based development - disable GitFlow
   enable_gitflow        = false
