@@ -151,7 +151,7 @@ jobs:
 
       - name: Generate documentation
         run: |
-          terraform-docs markdown table --output-file README.md --output-mode inject .
+          terraform-docs --config .terraform-docs.yml markdown table --output-file README.md --output-mode inject .
 
       - name: Commit documentation changes
         if: github.event_name == 'push'
