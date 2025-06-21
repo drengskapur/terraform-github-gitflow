@@ -66,6 +66,4 @@ module "gitflow" {
   # Branch Protection
   main_branch_require_signed_commits    = true
   develop_branch_require_signed_commits = false
-
-  # Commit Requirements
 }
