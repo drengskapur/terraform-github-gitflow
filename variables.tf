@@ -158,7 +158,7 @@ variable "enable_dependabot_security_updates" {
 
 variable "enable_gitflow" {
   type        = bool
-  description = "Enable full GitFlow workflow (develop/release/hotfix branches). Set to false for trunk-based development."
+  description = "Enable GitFlow workflow (develop / feature / release / hotfix branches). This module is designed for GitFlow, so this should normally remain true."
   default     = true
 }
 
