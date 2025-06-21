@@ -1,55 +1,54 @@
-# 📝 Description
+<!--
+PR Title should follow Conventional Commits, e.g.:
+  feat(branches): add support for custom branch patterns
+  fix(environments): correct deployment policy configuration
+-->
 
-Brief description of the changes in this PR.
+## Description
 
-Fixes #(issue)
+Provide a clear and concise description of **what** this pull request does and **why**. Include any relevant context or background.
 
-## 🔄 Type of Change
+## Related Issue
 
-- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
-- [ ] 🚀 New feature (non-breaking change which adds functionality)
-- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] 📚 Documentation update
-- [ ] 🔧 Maintenance/refactoring
-- [ ] ✅ Test improvements
+Closes #<!-- issue number -->
 
-## 🧪 Testing
+## Type of Change
 
-- [ ] Terraform validate passes
-- [ ] Terraform fmt passes
-- [ ] Examples work correctly
-- [ ] Tested against real GitHub repository (if applicable)
-- [ ] Added/updated tests for new functionality
+Select the option that best describes this pull request (remove those that do not apply):
 
-## 📋 Checklist
+- [ ] **feat**     – A new feature
+- [ ] **fix**      – A bug fix
+- [ ] **docs**     – Documentation only changes
+- [ ] **refactor** – A code change that neither fixes a bug nor adds a feature
+- [ ] **chore**    – Build process or auxiliary tool changes
+- [ ] **ci**       – Continuous Integration related changes
+- [ ] **breaking** – A change that breaks existing behaviour
 
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
+## How Has This Been Tested?
 
-## 📊 Impact
+Describe the tests you ran to verify your changes. Include instructions so reviewers can reproduce. If this PR adds or changes Terraform resources, please include the output of at least one successful `terraform plan`.
 
-Describe the impact of your changes:
+- [ ] `terraform validate` passes in `modules/github-gitflow`
+- [ ] `terraform validate` passes in each example directory
+- [ ] `terraform plan` succeeds for updated examples
 
-- **Breaking changes**: None / List breaking changes
-- **New variables**: List any new variables added
-- **Deprecated features**: List any features being deprecated
-- **Migration guide**: Link to migration guide if needed
+## Screenshots (if applicable)
 
-## 🔗 Related Issues
+## Additional Context
 
-- Closes #issue_number
-- Related to #issue_number
+Add any other information or links that may help the reviewer.
 
-## 📸 Screenshots (if applicable)
+---
 
-Add screenshots to help explain your changes.
+## Checklist
 
-## 📝 Additional Notes
-
-Add any other context about the pull request here.
+- [ ] My PR title follows the **Conventional Commits** specification
+- [ ] I have rebased my branch on `develop` and resolved any conflicts
+- [ ] I have run `pre-commit run -a` (or at least `terraform fmt -recursive`)
+- [ ] I have run `terraform validate` and the configuration is valid
+- [ ] I have run `tflint` and addressed all issues
+- [ ] I have updated module or root **documentation** with `terraform-docs` where relevant
+- [ ] I have added/updated **examples** if needed
+- [ ] I have updated **CHANGELOG.md** following *Keep a Changelog*
+- [ ] My changes generate **no new warnings** in workflows or tooling
+- [ ] I have performed a self-review of my own code and added comments where necessary

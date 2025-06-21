@@ -1,9 +1,11 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: '[FEATURE] '
-labels: 'enhancement'
-assignees: ''
+name: 🚀 Feature Request
+about: Suggest an idea to improve the terraform-github-gitflow module
+title: "[FEATURE] <short description>"
+labels:
+  - enhancement
+  - needs-triage
+assignees: ""
 ---
 
 ## 🚀 Feature Request
@@ -30,6 +32,13 @@ Describe the use case that would benefit from this feature:
 ## 📝 Additional context
 
 Add any other context, mockups, or screenshots about the feature request here.
+
+## ✔️ Checklist
+
+- [ ] I have searched the [existing issues](../../issues) for duplicates
+- [ ] I have described the **problem** this feature would solve
+- [ ] I have described **why** this feature is needed and who would benefit
+- [ ] I have provided example **Terraform configuration** where applicable
 
 ## 🧩 Implementation Ideas
 

@@ -2,8 +2,16 @@ name: Dependency Review
 on:
   pull_request:
     branches: [main, develop]
+
+# Restrict token permissions
 permissions:
   contents: read
+
+# Avoid duplicate runs on same PR head
+concurrency:
+  group: dependency-review-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 jobs:
   dependency-review:
     runs-on: ubuntu-latest

@@ -5,6 +5,16 @@ on:
       - opened
       - edited
       - synchronize
+
+# Only allow read permissions by default
+permissions:
+  contents: read
+
+# Run one validation per PR
+concurrency:
+  group: semantic-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   main:
     name: Validate PR title
