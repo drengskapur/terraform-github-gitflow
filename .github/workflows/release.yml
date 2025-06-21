@@ -23,6 +23,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install changelog dependencies
+        run: |
+          npm init -y
+          npm install --no-save conventional-changelog-cli
+
       - name: Extract version from tag
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
@@ -31,8 +42,8 @@ jobs:
         id: changelog
         run: |
           # Generate changelog from conventional commits
-          if command -v npx &> /dev/null; then
-            npx conventional-changelog-cli -p conventionalcommits -i CHANGELOG.md -s -r 0
+          if [ -f "node_modules/.bin/conventional-changelog" ]; then
+            ./node_modules/.bin/conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0
             echo "changelog_content<<EOF" >> $GITHUB_OUTPUT
             cat CHANGELOG.md >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
