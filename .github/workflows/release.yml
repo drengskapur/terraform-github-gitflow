@@ -96,7 +96,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.18.0
         with:
           body: ${{ steps.changelog.outputs.changelog_content }}
           token: ${{ secrets.GITHUB_TOKEN }}
